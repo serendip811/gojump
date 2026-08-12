@@ -502,9 +502,15 @@ def with_live_kb_supply(
         "secondaryHistoryUnit": "호",
         "secondarySource": "KB부동산 데이터허브·프롭티어 · 분양물량",
     })
+    live_count = int(snapshot.get("liveIndicatorCount", 0)) + 1
     snapshot["score"] = calculate_score(snapshot["indicators"])
     snapshot["level"] = level_for(snapshot["score"])
+    snapshot["delta7d"] = snapshot["score"] - load_fixture()["score"]
+    snapshot["deltaLabel"] = f"{live_count}개 지표 반영"
+    snapshot["confidence"] = min(.92, float(snapshot.get("confidence", .70)) + .04)
     snapshot["asOf"] = dt.date.today().strftime("%Y.%m.%d")
+    snapshot["dataMode"] = "live" if live_count == 6 else "partialLive"
+    snapshot["liveIndicatorCount"] = live_count
     return snapshot
 
 

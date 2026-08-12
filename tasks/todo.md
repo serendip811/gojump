@@ -1,5 +1,18 @@
 # GoJump iOS 프로토타입
 
+## KB 공급 실데이터 상태 집계 수정
+
+- [x] KB 공급 반영 시 실데이터 개수 증가
+- [x] `partialLive`에서 최종 `live` 전환 회귀 테스트 추가
+- [x] Python 전체 테스트 실행
+- [ ] GitHub 배포 후 JSON 상태 검증
+
+### Review
+
+- `with_live_kb_supply`도 서울시 공급 폴백과 동일하게 `liveIndicatorCount`, `dataMode`, 신뢰도와 반영 개수 라벨을 갱신한다.
+- 네 개 실지표 상태에서 KB 공급을 반영하면 5개 `partialLive`, 이어 확산도를 반영하면 6개 `live`가 되는 회귀 테스트를 추가했다.
+- Python 테스트 55개가 통과했다. GitHub Pages 재배포 응답 확인은 푸시 후 진행한다.
+
 ## GitHub Pages 정적 API
 
 - [x] 스냅샷 JSON 생성기와 운영 검증 추가

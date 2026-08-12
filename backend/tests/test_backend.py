@@ -530,10 +530,30 @@ class KBSupplyTests(unittest.TestCase):
     def test_live_snapshot_exposes_long_history_and_forecast_start(self):
         move_in = [SupplyObservation(year, 30_000) for year in range(1990, 2029)]
         supply = KBSupplySnapshot(move_in, [], 2026, 35_000, 30_000, 36)
-        result = with_live_kb_supply(load_fixture(), supply)
+        base = load_fixture()
+        base["dataMode"] = "partialLive"
+        base["liveIndicatorCount"] = 4
+        result = with_live_kb_supply(base, supply)
         item = next(row for row in result["indicators"] if row["id"] == "supply")
         self.assertEqual(len(item["rawHistory"]), 39)
         self.assertEqual(item["historyForecastStartLabel"], "2026")
+        self.assertEqual(result["liveIndicatorCount"], 5)
+        self.assertEqual(result["dataMode"], "partialLive")
+
+    def test_kb_supply_and_liquidity_complete_six_live_indicators(self):
+        move_in = [SupplyObservation(year, 30_000) for year in range(2016, 2028)]
+        supply = KBSupplySnapshot(move_in, [], 2026, 35_000, 30_000, 36)
+        liquidity = LiquiditySnapshot(
+            3.61, 2.75, 67.64, 1.08, 57, [50, 51, 52], "2026년 7월"
+        )
+        base = load_fixture()
+        base["dataMode"] = "partialLive"
+        base["liveIndicatorCount"] = 4
+
+        result = with_live_liquidity(with_live_kb_supply(base, supply), liquidity)
+
+        self.assertEqual(result["liveIndicatorCount"], 6)
+        self.assertEqual(result["dataMode"], "live")
 
 
 class SupplyBacktestTests(unittest.TestCase):
