@@ -1,0 +1,69 @@
+name: Publish static market API
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 21 * * *"
+      timezone: "Asia/Seoul"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Restore collector database
+        uses: actions/cache@v4
+        with:
+          path: backend/data/gojump.sqlite3
+          key: gojump-data-${{ github.run_id }}
+          restore-keys: |
+            gojump-data-
+
+      - name: Generate and validate snapshot
+        env:
+          DATA_GO_KR_SERVICE_KEY: ${{ secrets.DATA_GO_KR_SERVICE_KEY }}
+          ECOS_API_KEY: ${{ secrets.ECOS_API_KEY }}
+          HOUSTAT_API_KEY: ${{ secrets.HOUSTAT_API_KEY }}
+        run: |
+          if [ ! -s backend/data/gojump.sqlite3 ]; then
+            END_MONTH=$(python3 -c 'import datetime as d; x=d.date.today().replace(day=1)-d.timedelta(days=1); print(x.strftime("%Y%m"))')
+            python3 -m backend.backfill --end "$END_MONTH" --months 60 --workers 4 --delay 0.25
+          fi
+          python3 -m backend.export_static_api --require-live
+          python3 -m unittest discover -s backend/tests
+
+      - name: Add Pages metadata
+        run: |
+          touch public/.nojekyll
+          printf '{"status":"ok"}\n' > public/health.json
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

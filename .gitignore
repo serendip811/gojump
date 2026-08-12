@@ -1,0 +1,9 @@
+DerivedData/
+*.xcuserstate
+xcuserdata/
+.DS_Store
+.env
+__pycache__/
+*.py[cod]
+backend/data/*.sqlite3
+backend/data/*.sqlite3-*

@@ -1,0 +1,612 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 54;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		008FA6F70DBC52E652E5B1AA /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6BC5EB3D6F13A5D93EE99D7 /* RootView.swift */; };
+		00DEC5A811898EA2AB26E007 /* MarketSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36507672B682FFEBBBC8D911 /* MarketSnapshot.swift */; };
+		034B832256D98C8D4C44AEF3 /* MethodologyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49784F897D30610163770AA0 /* MethodologyView.swift */; };
+		061F195322745CCF183E33AC /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A35546822B77322A6603092F /* OnboardingView.swift */; };
+		1155E3FE7699D88FB50F11EC /* ScoreCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2846CB324146D554F7D76DCD /* ScoreCalculator.swift */; };
+		14DFAC632439435EC2314493 /* SnapshotCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5067648CBC7E6286FB218168 /* SnapshotCache.swift */; };
+		166A9F178B78BC785DDF64CC /* IndicatorDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCB7BB398BFECC6429BA28C1 /* IndicatorDetailView.swift */; };
+		2825AF4630470F4C1AAC5941 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BFABBE89C2452A4818996737 /* Assets.xcassets */; };
+		2D1711862433E7F8C56D309A /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E160F03B8FD8FC76711DB0D8 /* HomeView.swift */; };
+		36741CDFD619D9DB3EF10D0A /* InteractiveChartSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA9F2DD503DC81FAEA1CF994 /* InteractiveChartSelection.swift */; };
+		4C560A87D65335FDEA5D43D5 /* MarketSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36507672B682FFEBBBC8D911 /* MarketSnapshot.swift */; };
+		50833E3EADE66987B9863209 /* MarketStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AE8DCEF5611C2C02936E52F /* MarketStore.swift */; };
+		565276FCB9D767AE84DA387F /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0D66B30F68EA918E8EA56E6 /* Theme.swift */; };
+		65BD20C1641CA4DDD1619946 /* SnapshotCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5067648CBC7E6286FB218168 /* SnapshotCache.swift */; };
+		7B7E5651878D50C368F11046 /* GoJumpWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9ABDB96737BDBFF971706C /* GoJumpWidget.swift */; };
+		7DB4B9A6907702EED57E7E69 /* ScoreCalculatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA14C73D566F3053217CC032 /* ScoreCalculatorTests.swift */; };
+		8ECF55B66B6E1332318C01D4 /* ScoreCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2846CB324146D554F7D76DCD /* ScoreCalculator.swift */; };
+		A203F85E537A498FDAED2378 /* MarketSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36507672B682FFEBBBC8D911 /* MarketSnapshot.swift */; };
+		A9D31BD67F07202E92A3B605 /* SnapshotCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5067648CBC7E6286FB218168 /* SnapshotCache.swift */; };
+		C6901014F51BBFE121044DAE /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D642C4D962C0A2707D79D17 /* SettingsView.swift */; };
+		DEB7D688493124281138F9B0 /* GoJumpWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = AAC7C11D931E2C0FF46CD569 /* GoJumpWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		DF86CD2D7866C068FABC182B /* ScoreCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2846CB324146D554F7D76DCD /* ScoreCalculator.swift */; };
+		F8A2D4B4F2C253722A91A359 /* GoJumpApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 056C5A4F80D82CB5EDD9BE20 /* GoJumpApp.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		69032D2E8DDE8FE08A99D2D4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A27DDA1BCE88131769FE61C2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D94FDDE3D5E049C3B84F8C4D;
+			remoteInfo = GoJump;
+		};
+		CF74D5CFBE807BC915323677 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A27DDA1BCE88131769FE61C2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C7E79B5EBA823F057EA0EC40;
+			remoteInfo = GoJumpWidgetExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		97078D25911B5E20E5A0F58E /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				DEB7D688493124281138F9B0 /* GoJumpWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		056C5A4F80D82CB5EDD9BE20 /* GoJumpApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoJumpApp.swift; sourceTree = "<group>"; };
+		0D2BF2880DC4A55211985923 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		1D642C4D962C0A2707D79D17 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		2846CB324146D554F7D76DCD /* ScoreCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreCalculator.swift; sourceTree = "<group>"; };
+		2AE8DCEF5611C2C02936E52F /* MarketStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketStore.swift; sourceTree = "<group>"; };
+		36507672B682FFEBBBC8D911 /* MarketSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketSnapshot.swift; sourceTree = "<group>"; };
+		49784F897D30610163770AA0 /* MethodologyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MethodologyView.swift; sourceTree = "<group>"; };
+		4DC208BE5682F1D3060F010F /* GoJumpTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = GoJumpTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		5067648CBC7E6286FB218168 /* SnapshotCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotCache.swift; sourceTree = "<group>"; };
+		77F5B6DB0FC252622FDA3C82 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		794770744D5BA7F8BCE09323 /* GoJump.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = GoJump.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A35546822B77322A6603092F /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		AAC7C11D931E2C0FF46CD569 /* GoJumpWidgetExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = GoJumpWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		ACAA5761FB7456473E2F30D5 /* GoJumpWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GoJumpWidget.entitlements; sourceTree = "<group>"; };
+		BFABBE89C2452A4818996737 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		CA14C73D566F3053217CC032 /* ScoreCalculatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreCalculatorTests.swift; sourceTree = "<group>"; };
+		D0D66B30F68EA918E8EA56E6 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		D6BC5EB3D6F13A5D93EE99D7 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		DA9F2DD503DC81FAEA1CF994 /* InteractiveChartSelection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractiveChartSelection.swift; sourceTree = "<group>"; };
+		DE9ABDB96737BDBFF971706C /* GoJumpWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoJumpWidget.swift; sourceTree = "<group>"; };
+		E160F03B8FD8FC76711DB0D8 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		F277040D6A0C0E6C69A2A162 /* GoJump.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GoJump.entitlements; sourceTree = "<group>"; };
+		FCB7BB398BFECC6429BA28C1 /* IndicatorDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndicatorDetailView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		1234284FCE28467E1B3544B9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				794770744D5BA7F8BCE09323 /* GoJump.app */,
+				4DC208BE5682F1D3060F010F /* GoJumpTests.xctest */,
+				AAC7C11D931E2C0FF46CD569 /* GoJumpWidgetExtension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		1B7F51860FD1F85512A70C82 /* GoJumpWidget */ = {
+			isa = PBXGroup;
+			children = (
+				ACAA5761FB7456473E2F30D5 /* GoJumpWidget.entitlements */,
+				DE9ABDB96737BDBFF971706C /* GoJumpWidget.swift */,
+				0D2BF2880DC4A55211985923 /* Info.plist */,
+			);
+			path = GoJumpWidget;
+			sourceTree = "<group>";
+		};
+		5B8744DAD3958A7CD9E9FF48 /* GoJumpApp */ = {
+			isa = PBXGroup;
+			children = (
+				BFABBE89C2452A4818996737 /* Assets.xcassets */,
+				F277040D6A0C0E6C69A2A162 /* GoJump.entitlements */,
+				056C5A4F80D82CB5EDD9BE20 /* GoJumpApp.swift */,
+				E160F03B8FD8FC76711DB0D8 /* HomeView.swift */,
+				FCB7BB398BFECC6429BA28C1 /* IndicatorDetailView.swift */,
+				77F5B6DB0FC252622FDA3C82 /* Info.plist */,
+				DA9F2DD503DC81FAEA1CF994 /* InteractiveChartSelection.swift */,
+				2AE8DCEF5611C2C02936E52F /* MarketStore.swift */,
+				49784F897D30610163770AA0 /* MethodologyView.swift */,
+				A35546822B77322A6603092F /* OnboardingView.swift */,
+				D6BC5EB3D6F13A5D93EE99D7 /* RootView.swift */,
+				1D642C4D962C0A2707D79D17 /* SettingsView.swift */,
+				D0D66B30F68EA918E8EA56E6 /* Theme.swift */,
+			);
+			path = GoJumpApp;
+			sourceTree = "<group>";
+		};
+		95C488EB8C9E97F979C31FC9 = {
+			isa = PBXGroup;
+			children = (
+				5B8744DAD3958A7CD9E9FF48 /* GoJumpApp */,
+				F4D06558A03285757D34520C /* GoJumpTests */,
+				1B7F51860FD1F85512A70C82 /* GoJumpWidget */,
+				E32D5BE9615B1E1B31D26F30 /* Shared */,
+				1234284FCE28467E1B3544B9 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E32D5BE9615B1E1B31D26F30 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				36507672B682FFEBBBC8D911 /* MarketSnapshot.swift */,
+				2846CB324146D554F7D76DCD /* ScoreCalculator.swift */,
+				5067648CBC7E6286FB218168 /* SnapshotCache.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		F4D06558A03285757D34520C /* GoJumpTests */ = {
+			isa = PBXGroup;
+			children = (
+				CA14C73D566F3053217CC032 /* ScoreCalculatorTests.swift */,
+			);
+			path = GoJumpTests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		77D16FFDA05CD6E51A63CBDA /* GoJumpTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A0E4BBE093062E15F89918A4 /* Build configuration list for PBXNativeTarget "GoJumpTests" */;
+			buildPhases = (
+				72DAAE97E26207BD4D6A700E /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				6C91E82FB5A8B7673A265539 /* PBXTargetDependency */,
+			);
+			name = GoJumpTests;
+			packageProductDependencies = (
+			);
+			productName = GoJumpTests;
+			productReference = 4DC208BE5682F1D3060F010F /* GoJumpTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		C7E79B5EBA823F057EA0EC40 /* GoJumpWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7FB1E2B0B3D455867FBE52B7 /* Build configuration list for PBXNativeTarget "GoJumpWidgetExtension" */;
+			buildPhases = (
+				83C0AC280AD4ED8A5DCA4164 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = GoJumpWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = GoJumpWidgetExtension;
+			productReference = AAC7C11D931E2C0FF46CD569 /* GoJumpWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		D94FDDE3D5E049C3B84F8C4D /* GoJump */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 27665880191DD3BC73B9AE29 /* Build configuration list for PBXNativeTarget "GoJump" */;
+			buildPhases = (
+				980E898F264BC78B89331628 /* Sources */,
+				8AEA4131977CAA6895E28220 /* Resources */,
+				97078D25911B5E20E5A0F58E /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				54A36EE93D4CE52C60601371 /* PBXTargetDependency */,
+			);
+			name = GoJump;
+			packageProductDependencies = (
+			);
+			productName = GoJump;
+			productReference = 794770744D5BA7F8BCE09323 /* GoJump.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A27DDA1BCE88131769FE61C2 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 2600;
+				TargetAttributes = {
+					77D16FFDA05CD6E51A63CBDA = {
+						DevelopmentTeam = "";
+					};
+					C7E79B5EBA823F057EA0EC40 = {
+						DevelopmentTeam = "";
+					};
+					D94FDDE3D5E049C3B84F8C4D = {
+						DevelopmentTeam = "";
+					};
+				};
+			};
+			buildConfigurationList = ED7D8444816002D32AEB284D /* Build configuration list for PBXProject "GoJump" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 95C488EB8C9E97F979C31FC9;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 54;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D94FDDE3D5E049C3B84F8C4D /* GoJump */,
+				77D16FFDA05CD6E51A63CBDA /* GoJumpTests */,
+				C7E79B5EBA823F057EA0EC40 /* GoJumpWidgetExtension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		8AEA4131977CAA6895E28220 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2825AF4630470F4C1AAC5941 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		72DAAE97E26207BD4D6A700E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A203F85E537A498FDAED2378 /* MarketSnapshot.swift in Sources */,
+				1155E3FE7699D88FB50F11EC /* ScoreCalculator.swift in Sources */,
+				7DB4B9A6907702EED57E7E69 /* ScoreCalculatorTests.swift in Sources */,
+				65BD20C1641CA4DDD1619946 /* SnapshotCache.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		83C0AC280AD4ED8A5DCA4164 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7B7E5651878D50C368F11046 /* GoJumpWidget.swift in Sources */,
+				00DEC5A811898EA2AB26E007 /* MarketSnapshot.swift in Sources */,
+				DF86CD2D7866C068FABC182B /* ScoreCalculator.swift in Sources */,
+				A9D31BD67F07202E92A3B605 /* SnapshotCache.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		980E898F264BC78B89331628 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F8A2D4B4F2C253722A91A359 /* GoJumpApp.swift in Sources */,
+				2D1711862433E7F8C56D309A /* HomeView.swift in Sources */,
+				166A9F178B78BC785DDF64CC /* IndicatorDetailView.swift in Sources */,
+				36741CDFD619D9DB3EF10D0A /* InteractiveChartSelection.swift in Sources */,
+				4C560A87D65335FDEA5D43D5 /* MarketSnapshot.swift in Sources */,
+				50833E3EADE66987B9863209 /* MarketStore.swift in Sources */,
+				034B832256D98C8D4C44AEF3 /* MethodologyView.swift in Sources */,
+				061F195322745CCF183E33AC /* OnboardingView.swift in Sources */,
+				008FA6F70DBC52E652E5B1AA /* RootView.swift in Sources */,
+				8ECF55B66B6E1332318C01D4 /* ScoreCalculator.swift in Sources */,
+				C6901014F51BBFE121044DAE /* SettingsView.swift in Sources */,
+				14DFAC632439435EC2314493 /* SnapshotCache.swift in Sources */,
+				565276FCB9D767AE84DA387F /* Theme.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		54A36EE93D4CE52C60601371 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C7E79B5EBA823F057EA0EC40 /* GoJumpWidgetExtension */;
+			targetProxy = CF74D5CFBE807BC915323677 /* PBXContainerItemProxy */;
+		};
+		6C91E82FB5A8B7673A265539 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D94FDDE3D5E049C3B84F8C4D /* GoJump */;
+			targetProxy = 69032D2E8DDE8FE08A99D2D4 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		0945D314FE94F790ABA33636 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = kr.gojump.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GoJump.app/GoJump";
+			};
+			name = Release;
+		};
+		0F733DADE8BD9EF4DF7C568D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		3D2768A87FD9A35A34E46C09 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = GoJumpWidget/GoJumpWidget.entitlements;
+				INFOPLIST_FILE = GoJumpWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "아파트 고점 지수";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = kr.gojump.app.widget;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		7788714C2AFDE6CFDFB4607F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		AC7D9C9AF54972CD86E6C1C8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = GoJumpApp/GoJump.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = GoJumpApp/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "아파트 고점 지수";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = kr.gojump.app;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		B7DB1D48694E10FF41DCD0BC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = kr.gojump.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GoJump.app/GoJump";
+			};
+			name = Debug;
+		};
+		D461B4B0848AC03A3EC27CBB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = GoJumpApp/GoJump.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = GoJumpApp/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "아파트 고점 지수";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = kr.gojump.app;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		E1BAC8A13DEB7B473F7013FC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = GoJumpWidget/GoJumpWidget.entitlements;
+				INFOPLIST_FILE = GoJumpWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "아파트 고점 지수";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = kr.gojump.app.widget;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		27665880191DD3BC73B9AE29 /* Build configuration list for PBXNativeTarget "GoJump" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D461B4B0848AC03A3EC27CBB /* Debug */,
+				AC7D9C9AF54972CD86E6C1C8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		7FB1E2B0B3D455867FBE52B7 /* Build configuration list for PBXNativeTarget "GoJumpWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E1BAC8A13DEB7B473F7013FC /* Debug */,
+				3D2768A87FD9A35A34E46C09 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		A0E4BBE093062E15F89918A4 /* Build configuration list for PBXNativeTarget "GoJumpTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B7DB1D48694E10FF41DCD0BC /* Debug */,
+				0945D314FE94F790ABA33636 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		ED7D8444816002D32AEB284D /* Build configuration list for PBXProject "GoJump" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7788714C2AFDE6CFDFB4607F /* Debug */,
+				0F733DADE8BD9EF4DF7C568D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A27DDA1BCE88131769FE61C2 /* Project object */;
+}
