@@ -36,12 +36,23 @@ def build_snapshot(year_month: str | None = None) -> dict:
 
     client = MolitTradeClient(key)
     previous_year_month = previous_month(year_month)
-    current_trades = client.fetch_seoul_month(year_month)
     store = TradeStore()
-    for district_code in SEOUL_DISTRICTS:
-        store.replace_district_month(
-            district_code, year_month,
-            [trade for trade in current_trades if trade.district_code == district_code],
+    trade_warnings: list[str] = []
+    try:
+        current_trades = client.fetch_seoul_month(year_month)
+        for district_code in SEOUL_DISTRICTS:
+            store.replace_district_month(
+                district_code, year_month,
+                [trade for trade in current_trades if trade.district_code == district_code],
+            )
+        current_count = len(current_trades)
+    except Exception as error:
+        if not store.is_seoul_month_complete(year_month):
+            store.close()
+            raise
+        current_count = store.month_count(year_month)
+        trade_warnings.append(
+            f"MOLIT refresh unavailable; complete cached month used: {type(error).__name__}"
         )
     if store.is_seoul_month_complete(previous_year_month):
         previous_count = store.month_count(previous_year_month)
@@ -54,10 +65,12 @@ def build_snapshot(year_month: str | None = None) -> dict:
                 [trade for trade in previous_trades if trade.district_code == district_code],
             )
     snapshot = with_live_volume(
-        snapshot, len(current_trades), previous_count,
+        snapshot, current_count, previous_count,
         f"{year_month[:4]}년 {int(year_month[4:])}월",
         store.monthly_counts(240),
     )
+    if trade_warnings:
+        snapshot.setdefault("dataWarnings", []).extend(trade_warnings)
     ecos = EcosClient(os.getenv("ECOS_API_KEY", "sample"))
     rates = ecos.fetch_rates()
     macro_store = MacroStore()
