@@ -24,6 +24,7 @@ from backend.trade_store import TradeStore
 
 def build_snapshot(year_month: str | None = None) -> dict:
     snapshot = load_fixture()
+    fresh_indicator_ids: set[str] = set()
     key = os.getenv("DATA_GO_KR_SERVICE_KEY")
     if not key:
         snapshot["dataMode"] = "fixture"
@@ -46,6 +47,7 @@ def build_snapshot(year_month: str | None = None) -> dict:
                 [trade for trade in current_trades if trade.district_code == district_code],
             )
         current_count = len(current_trades)
+        fresh_indicator_ids.add("volume")
     except Exception as error:
         if not store.is_seoul_month_complete(year_month):
             store.close()
@@ -79,6 +81,7 @@ def build_snapshot(year_month: str | None = None) -> dict:
     finally:
         macro_store.close()
     snapshot = with_live_rate(snapshot, rates)
+    fresh_indicator_ids.add("rate")
     unsold = ecos.fetch_seoul_unsold()
     macro_store = MacroStore()
     try:
@@ -95,6 +98,7 @@ def build_snapshot(year_month: str | None = None) -> dict:
         snapshot = with_live_subscription(
             snapshot, build_subscription_snapshot(subscription_rows), unsold
         )
+        fresh_indicator_ids.add("subscription")
     except Exception as error:
         snapshot = with_live_unsold(snapshot, unsold)
         warnings = snapshot.setdefault("dataWarnings", [])
@@ -108,6 +112,7 @@ def build_snapshot(year_month: str | None = None) -> dict:
         finally:
             macro_store.close()
         snapshot = with_live_affordability(snapshot, affordability)
+        fresh_indicator_ids.add("pir")
     except Exception as error:
         snapshot["dataWarnings"] = [f"HOUSTAT unavailable: {type(error).__name__}"]
     try:
@@ -119,15 +124,19 @@ def build_snapshot(year_month: str | None = None) -> dict:
         finally:
             macro_store.close()
         snapshot = with_live_kb_supply(snapshot, kb_supply, seoul_supply)
+        fresh_indicator_ids.add("supply")
     except Exception as error:
         warnings = snapshot.setdefault("dataWarnings", [])
         warnings.append(f"KB supply unavailable: {type(error).__name__}")
         try:
             snapshot = with_live_supply(snapshot, SeoulSupplyClient().fetch())
+            fresh_indicator_ids.add("supply")
         except Exception as fallback_error:
             warnings.append(f"Seoul supply unavailable: {type(fallback_error).__name__}")
     try:
         snapshot = with_live_liquidity(snapshot, analyze_liquidity(store, year_month))
+        if "volume" in fresh_indicator_ids:
+            fresh_indicator_ids.add("unpopular")
     except Exception as error:
         warnings = snapshot.setdefault("dataWarnings", [])
         warnings.append(f"Liquidity unavailable: {type(error).__name__}")
@@ -148,6 +157,8 @@ def build_snapshot(year_month: str | None = None) -> dict:
             snapshot = with_price_history(snapshot, price_history)
     finally:
         macro_store.close()
+    snapshot["freshIndicatorIds"] = sorted(fresh_indicator_ids)
+    snapshot["freshIndicatorCount"] = len(fresh_indicator_ids)
     return snapshot
 
 

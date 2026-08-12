@@ -36,6 +36,12 @@ def validate_snapshot(snapshot: dict, require_live: bool = False) -> None:
         raise ValueError(f"Expected API-backed snapshot, got {snapshot['dataMode']}")
     if require_live and int(snapshot.get("liveIndicatorCount") or 0) < 5:
         raise ValueError("Production snapshot must contain at least five live indicators")
+    if require_live and int(snapshot.get("freshIndicatorCount") or 0) != 6:
+        fresh_ids = ", ".join(snapshot.get("freshIndicatorIds") or []) or "none"
+        raise ValueError(
+            "Production snapshot must freshly collect all six indicators "
+            f"(fresh: {fresh_ids})"
+        )
 
 
 def export_snapshot(output: Path, month: str | None, require_live: bool) -> dict:

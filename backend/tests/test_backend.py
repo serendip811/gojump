@@ -142,7 +142,22 @@ class SnapshotTests(unittest.TestCase):
         snapshot = load_fixture()
         snapshot["dataMode"] = "partialLive"
         snapshot["liveIndicatorCount"] = 5
+        snapshot["freshIndicatorCount"] = 6
+        snapshot["freshIndicatorIds"] = [
+            "pir", "volume", "unpopular", "subscription", "rate", "supply"
+        ]
         validate_snapshot(snapshot, require_live=True)
+
+    def test_static_export_rejects_cached_or_fallback_indicator(self):
+        snapshot = load_fixture()
+        snapshot["dataMode"] = "live"
+        snapshot["liveIndicatorCount"] = 6
+        snapshot["freshIndicatorCount"] = 5
+        snapshot["freshIndicatorIds"] = [
+            "pir", "volume", "unpopular", "rate", "supply"
+        ]
+        with self.assertRaisesRegex(ValueError, "freshly collect all six"):
+            validate_snapshot(snapshot, require_live=True)
 
     def test_expansion_signal_is_small_positive_bonus(self):
         fixture = load_fixture()

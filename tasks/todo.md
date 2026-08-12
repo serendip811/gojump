@@ -16,6 +16,21 @@
 - Python 테스트 55개가 통과했다. GitHub Pages 재배포 응답 확인은 푸시 후 진행한다.
 - Actions 재배포가 성공했고 공개 JSON에서 `dataMode=live`, `liveIndicatorCount=6`, 종합점수 64를 확인했다.
 
+## Actions 신규 수집 완전성 강화
+
+- [x] 캐시·대체 실데이터와 이번 실행 신규 조회 상태 분리
+- [x] 여섯 지표 전부 신규 조회 시에만 운영 배포 허용
+- [x] 전체 스냅샷 수집 3회 재시도
+- [x] 신규 수집 누락 거부 회귀 테스트 추가
+- [ ] GitHub Actions에서 여섯 지표 신규 조회 확인
+
+### Review
+
+- `freshIndicatorIds`와 `freshIndicatorCount`를 추가해 기존 `liveIndicatorCount`와 별도로 이번 실행의 실제 조회 성공을 기록한다.
+- 국토부 캐시 사용 시 거래량·확산도, 청약홈 실패 후 미분양 대체 시 청약은 신규 조회로 세지 않는다.
+- `--require-live` 배포는 여섯 지표가 모두 신규 조회되지 않으면 거부하고 60초 간격으로 최대 세 번 전체 수집을 재시도한다.
+- Python 테스트 56개가 통과했다.
+
 ## GitHub Pages 정적 API
 
 - [x] 스냅샷 JSON 생성기와 운영 검증 추가
