@@ -5,7 +5,7 @@
 - [x] KB 공급 반영 시 실데이터 개수 증가
 - [x] `partialLive`에서 최종 `live` 전환 회귀 테스트 추가
 - [x] Python 전체 테스트 실행
-- [ ] GitHub 배포 후 JSON 상태 검증
+- [x] GitHub 배포 후 JSON 상태 검증
 - [x] 국토부 일시 장애 시 완전한 월 캐시 폴백 적용
 
 ### Review
@@ -14,6 +14,7 @@
 - 네 개 실지표 상태에서 KB 공급을 반영하면 5개 `partialLive`, 이어 확산도를 반영하면 6개 `live`가 되는 회귀 테스트를 추가했다.
 - 국토부 최신 월 재조회가 실패해도 서울 25개 구 수집 완료가 확인된 캐시는 사용할 수 있게 했다. 불완전 캐시라면 예외를 유지해 배포를 막는다.
 - Python 테스트 55개가 통과했다. GitHub Pages 재배포 응답 확인은 푸시 후 진행한다.
+- Actions 재배포가 성공했고 공개 JSON에서 `dataMode=live`, `liveIndicatorCount=6`, 종합점수 64를 확인했다.
 
 ## GitHub Pages 정적 API
 
