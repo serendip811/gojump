@@ -155,11 +155,11 @@ class SnapshotTests(unittest.TestCase):
         snapshot = load_fixture()
         snapshot["dataMode"] = "live"
         snapshot["liveIndicatorCount"] = 6
-        snapshot["freshIndicatorCount"] = 5
+        snapshot["freshIndicatorCount"] = 2
         snapshot["freshIndicatorIds"] = [
             "pir", "volume", "unpopular", "rate", "supply"
         ]
-        with self.assertRaisesRegex(ValueError, "freshly collect all six"):
+        with self.assertRaisesRegex(ValueError, "at least three indicators"):
             validate_snapshot(snapshot, require_live=True)
 
     def test_static_export_rejects_short_production_history(self):
