@@ -41,7 +41,6 @@ jobs:
           HOUSTAT_API_KEY: ${{ secrets.HOUSTAT_API_KEY }}
         run: |
           END_MONTH=$(python3 -c 'import datetime as d; x=d.date.today().replace(day=1)-d.timedelta(days=1); print(x.strftime("%Y%m"))')
-          python3 -m backend.backfill --end "$END_MONTH" --months 24 --workers 4 --delay 0.25
           for attempt in 1 2 3; do
             if python3 -m backend.export_static_api --require-live; then
               break
