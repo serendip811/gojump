@@ -47,12 +47,14 @@ struct HomeView: View {
             }
             Spacer(minLength: 12)
             VStack(alignment: .trailing, spacing: 7) {
-                Label(dataStatus.title, systemImage: dataStatus.symbol)
-                    .font(.caption2.weight(.semibold))
-                    .foregroundStyle(dataStatus.color)
-                    .padding(.horizontal, 9)
-                    .padding(.vertical, 5)
-                    .background(dataStatus.color.opacity(0.10), in: Capsule())
+                if let dataStatus {
+                    Label(dataStatus.title, systemImage: dataStatus.symbol)
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(dataStatus.color)
+                        .padding(.horizontal, 9)
+                        .padding(.vertical, 5)
+                        .background(dataStatus.color.opacity(0.10), in: Capsule())
+                }
                 Text(updateTimeLabel)
                     .font(.caption)
                     .foregroundStyle(AppTheme.secondary)
@@ -262,7 +264,7 @@ struct HomeView: View {
         }
     }
 
-    private var dataStatus: (title: String, symbol: String, color: Color) {
+    private var dataStatus: (title: String, symbol: String, color: Color)? {
         switch loadState {
         case .loading:
             return ("업데이트 중", "arrow.triangle.2.circlepath", AppTheme.secondary)
@@ -273,7 +275,7 @@ struct HomeView: View {
             return ("저장 데이터", "internaldrive.fill", AppTheme.secondary)
         default:
             switch snapshot.dataMode {
-            case "live": return ("실데이터", "checkmark.circle.fill", .green)
+            case "live": return nil
             case "partialLive": return ("일부 실데이터", "exclamationmark.circle.fill", AppTheme.accent)
             default: return ("샘플", "hammer.fill", AppTheme.accent)
             }
