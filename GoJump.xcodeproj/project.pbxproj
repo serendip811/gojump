@@ -13,6 +13,8 @@
 		061F195322745CCF183E33AC /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A35546822B77322A6603092F /* OnboardingView.swift */; };
 		1155E3FE7699D88FB50F11EC /* ScoreCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2846CB324146D554F7D76DCD /* ScoreCalculator.swift */; };
 		14DFAC632439435EC2314493 /* SnapshotCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5067648CBC7E6286FB218168 /* SnapshotCache.swift */; };
+		14FE46615AB7A7046056029A /* MarketAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1D5ABBCFA8A695F28A1A5EB /* MarketAPIClient.swift */; };
+		15F2BF19A68D47B10B8E8822 /* MarketAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1D5ABBCFA8A695F28A1A5EB /* MarketAPIClient.swift */; };
 		166A9F178B78BC785DDF64CC /* IndicatorDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCB7BB398BFECC6429BA28C1 /* IndicatorDetailView.swift */; };
 		2825AF4630470F4C1AAC5941 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BFABBE89C2452A4818996737 /* Assets.xcassets */; };
 		2D1711862433E7F8C56D309A /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E160F03B8FD8FC76711DB0D8 /* HomeView.swift */; };
@@ -27,6 +29,7 @@
 		A203F85E537A498FDAED2378 /* MarketSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36507672B682FFEBBBC8D911 /* MarketSnapshot.swift */; };
 		A9D31BD67F07202E92A3B605 /* SnapshotCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5067648CBC7E6286FB218168 /* SnapshotCache.swift */; };
 		C6901014F51BBFE121044DAE /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D642C4D962C0A2707D79D17 /* SettingsView.swift */; };
+		C8A9159CABF3DF6F816CCA7A /* MarketAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1D5ABBCFA8A695F28A1A5EB /* MarketAPIClient.swift */; };
 		DEB7D688493124281138F9B0 /* GoJumpWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = AAC7C11D931E2C0FF46CD569 /* GoJumpWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		DF86CD2D7866C068FABC182B /* ScoreCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2846CB324146D554F7D76DCD /* ScoreCalculator.swift */; };
 		F8A2D4B4F2C253722A91A359 /* GoJumpApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 056C5A4F80D82CB5EDD9BE20 /* GoJumpApp.swift */; };
@@ -78,6 +81,7 @@
 		A35546822B77322A6603092F /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		AAC7C11D931E2C0FF46CD569 /* GoJumpWidgetExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = GoJumpWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		ACAA5761FB7456473E2F30D5 /* GoJumpWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GoJumpWidget.entitlements; sourceTree = "<group>"; };
+		B1D5ABBCFA8A695F28A1A5EB /* MarketAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketAPIClient.swift; sourceTree = "<group>"; };
 		BFABBE89C2452A4818996737 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CA14C73D566F3053217CC032 /* ScoreCalculatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreCalculatorTests.swift; sourceTree = "<group>"; };
 		D0D66B30F68EA918E8EA56E6 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
@@ -144,6 +148,7 @@
 		E32D5BE9615B1E1B31D26F30 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				B1D5ABBCFA8A695F28A1A5EB /* MarketAPIClient.swift */,
 				36507672B682FFEBBBC8D911 /* MarketSnapshot.swift */,
 				2846CB324146D554F7D76DCD /* ScoreCalculator.swift */,
 				5067648CBC7E6286FB218168 /* SnapshotCache.swift */,
@@ -274,6 +279,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				14FE46615AB7A7046056029A /* MarketAPIClient.swift in Sources */,
 				A203F85E537A498FDAED2378 /* MarketSnapshot.swift in Sources */,
 				1155E3FE7699D88FB50F11EC /* ScoreCalculator.swift in Sources */,
 				7DB4B9A6907702EED57E7E69 /* ScoreCalculatorTests.swift in Sources */,
@@ -286,6 +292,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7B7E5651878D50C368F11046 /* GoJumpWidget.swift in Sources */,
+				C8A9159CABF3DF6F816CCA7A /* MarketAPIClient.swift in Sources */,
 				00DEC5A811898EA2AB26E007 /* MarketSnapshot.swift in Sources */,
 				DF86CD2D7866C068FABC182B /* ScoreCalculator.swift in Sources */,
 				A9D31BD67F07202E92A3B605 /* SnapshotCache.swift in Sources */,
@@ -300,6 +307,7 @@
 				2D1711862433E7F8C56D309A /* HomeView.swift in Sources */,
 				166A9F178B78BC785DDF64CC /* IndicatorDetailView.swift in Sources */,
 				36741CDFD619D9DB3EF10D0A /* InteractiveChartSelection.swift in Sources */,
+				15F2BF19A68D47B10B8E8822 /* MarketAPIClient.swift in Sources */,
 				4C560A87D65335FDEA5D43D5 /* MarketSnapshot.swift in Sources */,
 				50833E3EADE66987B9863209 /* MarketStore.swift in Sources */,
 				034B832256D98C8D4C44AEF3 /* MethodologyView.swift in Sources */,

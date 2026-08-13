@@ -53,13 +53,20 @@ struct HomeView: View {
                     .padding(.horizontal, 9)
                     .padding(.vertical, 5)
                     .background(dataStatus.color.opacity(0.10), in: Capsule())
-                Text("\(snapshot.asOf) 기준")
+                Text(updateTimeLabel)
                     .font(.caption)
                     .foregroundStyle(AppTheme.secondary)
             }
             .padding(.bottom, 6)
         }
         .padding(.top, 20)
+    }
+
+    private var updateTimeLabel: String {
+        guard let generated = snapshot.generatedAtLabel else {
+            return "\(snapshot.asOf) 기준"
+        }
+        return snapshot.isStale() ? "업데이트 지연 · \(generated)" : "업데이트 \(generated)"
     }
 
     private var hero: some View {

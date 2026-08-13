@@ -20,6 +20,8 @@
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>GOJUMP_SNAPSHOT_URL</key>
+	<string>https://serendip811.github.io/gojump/api/v1/markets/seoul/snapshot.json</string>
 	<key>NSExtension</key>
 	<dict>
 		<key>NSExtensionPointIdentifier</key>

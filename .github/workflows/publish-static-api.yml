@@ -3,7 +3,7 @@ name: Publish static market API
 on:
   workflow_dispatch:
   schedule:
-    - cron: "17 21 * * *"
+    - cron: "17 6 * * *"
       timezone: "Asia/Seoul"
 
 permissions:
@@ -59,7 +59,21 @@ jobs:
       - name: Add Pages metadata
         run: |
           touch public/.nojekyll
-          printf '{"status":"ok"}\n' > public/health.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          snapshot = json.loads(Path("public/api/v1/markets/seoul/snapshot.json").read_text())
+          health = {
+              "status": "ok",
+              "generatedAt": snapshot["generatedAt"],
+              "asOf": snapshot["asOf"],
+              "score": snapshot["score"],
+              "dataMode": snapshot["dataMode"],
+              "freshIndicatorCount": snapshot.get("freshIndicatorCount"),
+          }
+          Path("public/health.json").write_text(json.dumps(health) + "\n")
+          PY
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

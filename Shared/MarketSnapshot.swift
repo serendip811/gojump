@@ -76,6 +76,7 @@ struct MarketSnapshot: Codable, Sendable {
     let deltaLabel: String?
     let confidence: Double
     let asOf: String
+    var generatedAt: String? = nil
     let summary: String
     let history: [Int]
     var historyLabels: [String]? = nil
@@ -88,6 +89,28 @@ struct MarketSnapshot: Codable, Sendable {
 
     var level: MarketLevel { .from(score: score) }
     var strongestIndicator: MarketIndicator? { indicators.max { $0.score < $1.score } }
+
+    var generatedDate: Date? {
+        guard let generatedAt else { return nil }
+        let fractionalFormatter = ISO8601DateFormatter()
+        fractionalFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return fractionalFormatter.date(from: generatedAt)
+            ?? ISO8601DateFormatter().date(from: generatedAt)
+    }
+
+    func isStale(now: Date = .now, threshold: TimeInterval = 36 * 60 * 60) -> Bool {
+        guard let generatedDate else { return dataMode == "live" || dataMode == "partialLive" }
+        return now.timeIntervalSince(generatedDate) > threshold
+    }
+
+    var generatedAtLabel: String? {
+        guard let generatedDate else { return nil }
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.timeZone = TimeZone(identifier: "Asia/Seoul")
+        formatter.dateFormat = "M월 d일 HH:mm"
+        return formatter.string(from: generatedDate)
+    }
 }
 
 extension MarketSnapshot {

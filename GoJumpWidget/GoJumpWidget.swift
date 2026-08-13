@@ -1,5 +1,5 @@
 import SwiftUI
-import WidgetKit
+@preconcurrency import WidgetKit
 
 struct GoJumpEntry: TimelineEntry {
     let date: Date
@@ -7,13 +7,36 @@ struct GoJumpEntry: TimelineEntry {
 }
 
 struct GoJumpProvider: TimelineProvider {
+    private final class CompletionBox: @unchecked Sendable {
+        let call: (Timeline<GoJumpEntry>) -> Void
+
+        init(_ call: @escaping (Timeline<GoJumpEntry>) -> Void) {
+            self.call = call
+        }
+    }
+
+    private let client = MarketAPIClient()
+
     func placeholder(in context: Context) -> GoJumpEntry { .init(date: .now, snapshot: .sample) }
     func getSnapshot(in context: Context, completion: @escaping (GoJumpEntry) -> Void) {
         completion(.init(date: .now, snapshot: SnapshotCache.load() ?? .sample))
     }
     func getTimeline(in context: Context, completion: @escaping (Timeline<GoJumpEntry>) -> Void) {
-        let entry = GoJumpEntry(date: .now, snapshot: SnapshotCache.load() ?? .sample)
-        completion(Timeline(entries: [entry], policy: .after(.now.addingTimeInterval(6 * 60 * 60))))
+        let completionBox = CompletionBox(completion)
+        Task {
+            let snapshot: MarketSnapshot
+            do {
+                let fresh = try await client.fetchSnapshot()
+                try SnapshotCache.save(fresh)
+                snapshot = fresh
+            } catch {
+                snapshot = SnapshotCache.load() ?? .sample
+            }
+            let entry = GoJumpEntry(date: .now, snapshot: snapshot)
+            completionBox.call(
+                Timeline(entries: [entry], policy: .after(.now.addingTimeInterval(6 * 60 * 60)))
+            )
+        }
     }
 }
 
@@ -53,7 +76,7 @@ struct GoJumpWidgetView: View {
                     .lineLimit(1)
             }
             HStack {
-                Text("\(entry.snapshot.asOf) 기준")
+                Text(widgetUpdateLabel)
                 Spacer()
                 if isSample { Text("샘플") }
             }
@@ -71,7 +94,7 @@ struct GoJumpWidgetView: View {
                     .font(.headline)
                     .foregroundStyle(levelColor)
                 Spacer()
-                Text("\(entry.snapshot.asOf) 기준\(isSample ? " · 샘플" : "")")
+                Text("\(widgetUpdateLabel)\(isSample ? " · 샘플" : "")")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
             }
@@ -125,6 +148,13 @@ struct GoJumpWidgetView: View {
 
     private var isSample: Bool {
         entry.snapshot.dataMode == "sample" || entry.snapshot.dataMode == "fixture"
+    }
+
+    private var widgetUpdateLabel: String {
+        if let generated = entry.snapshot.generatedAtLabel {
+            return entry.snapshot.isStale() ? "지연 · \(generated)" : generated
+        }
+        return "\(entry.snapshot.asOf) 기준"
     }
 
     private var levelColor: Color {

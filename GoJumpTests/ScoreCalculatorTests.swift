@@ -27,6 +27,26 @@ final class ScoreCalculatorTests: XCTestCase {
         XCTAssertEqual(decoded.liveIndicatorCount, 0)
     }
 
+    func testSnapshotGeneratedAtUsesSeoulDisplayTimeAndStaleness() throws {
+        let liveJSON = try JSONEncoder().encode(MarketSnapshot.sample)
+        var object = try XCTUnwrap(JSONSerialization.jsonObject(with: liveJSON) as? [String: Any])
+        object["generatedAt"] = "2026-08-12T21:17:00.000000Z"
+        object["dataMode"] = "live"
+        let data = try JSONSerialization.data(withJSONObject: object)
+        let snapshot = try JSONDecoder().decode(MarketSnapshot.self, from: data)
+
+        XCTAssertEqual(snapshot.generatedAtLabel, "8월 13일 06:17")
+        XCTAssertFalse(snapshot.isStale(now: try XCTUnwrap(ISO8601DateFormatter().date(from: "2026-08-13T20:00:00Z"))))
+        XCTAssertTrue(snapshot.isStale(now: try XCTUnwrap(ISO8601DateFormatter().date(from: "2026-08-14T10:00:00Z"))))
+    }
+
+    func testProductionClientDefaultsToPagesSnapshot() {
+        XCTAssertEqual(
+            MarketAPIClient.productionSnapshotURL.absoluteString,
+            "https://serendip811.github.io/gojump/api/v1/markets/seoul/snapshot.json"
+        )
+    }
+
     func testIndicatorDecodesRawHistory() throws {
         let json = #"{"id":"pir","title":"서울 주택구입부담","shortTitle":"구입부담","score":89,"trend":"up","value":"179.3","change":"1년 +23.6p","symbol":"house.fill","explanation":"설명","insight":"해석","source":"HOUSTAT","observedAt":"2026년 1분기","history":[78,83,90],"rawHistory":[155.2,165.1,179.3],"historyLabels":["2025 3Q","2025 4Q","2026 1Q"],"historyUnit":"K-HAI"}"#
         let indicator = try JSONDecoder().decode(MarketIndicator.self, from: Data(json.utf8))

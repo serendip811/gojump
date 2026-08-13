@@ -67,6 +67,7 @@ targets:
       path: GoJumpWidget/Info.plist
       properties:
         CFBundleDisplayName: 아파트 고점 지수
+        GOJUMP_SNAPSHOT_URL: https://serendip811.github.io/gojump/api/v1/markets/seoul/snapshot.json
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
     entitlements:
