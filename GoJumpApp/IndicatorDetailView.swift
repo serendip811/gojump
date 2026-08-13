@@ -93,7 +93,7 @@ struct IndicatorDetailView: View {
                             BarMark(
                                 x: .value("연도", point.index),
                                 y: .value("입주예정", point.value),
-                                width: points.count > 10 ? .fixed(10) : .ratio(0.62)
+                                width: .fixed(supplyBarWidth(for: points.count))
                             )
                             .foregroundStyle(
                                 isForecastSupply(point)
@@ -159,6 +159,7 @@ struct IndicatorDetailView: View {
                     InteractiveSelectionMarks(selection: selection)
                 }
                 .chartXAxis(.hidden)
+                .id(historyRange)
                 .chartXScale(range: .plotDimension(startPadding: 8, endPadding: 28))
                 .chartYScale(domain: yDomain(for: points))
                 .chartXSelection(value: $selectedHistoryIndex)
@@ -294,6 +295,12 @@ struct IndicatorDetailView: View {
     private func isForecastSupply(_ point: HistoryPoint) -> Bool {
         guard let start = indicator.historyForecastStartLabel else { return false }
         return point.label >= start
+    }
+
+    private func supplyBarWidth(for count: Int) -> CGFloat {
+        if count > 25 { return 7 }
+        if count > 10 { return 11 }
+        return 20
     }
 
     private func yDomain(for points: [HistoryPoint]) -> ClosedRange<Double> {

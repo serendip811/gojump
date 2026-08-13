@@ -146,6 +146,9 @@ class SnapshotTests(unittest.TestCase):
         snapshot["freshIndicatorIds"] = [
             "pir", "volume", "unpopular", "subscription", "rate", "supply"
         ]
+        supply = next(row for row in snapshot["indicators"] if row["id"] == "supply")
+        supply["rawHistory"] = list(range(10))
+        supply["historyLabels"] = [str(year) for year in range(2017, 2027)]
         validate_snapshot(snapshot, require_live=True)
 
     def test_static_export_rejects_cached_or_fallback_indicator(self):
@@ -157,6 +160,33 @@ class SnapshotTests(unittest.TestCase):
             "pir", "volume", "unpopular", "rate", "supply"
         ]
         with self.assertRaisesRegex(ValueError, "freshly collect all six"):
+            validate_snapshot(snapshot, require_live=True)
+
+    def test_static_export_rejects_short_production_history(self):
+        snapshot = load_fixture()
+        snapshot["dataMode"] = "live"
+        snapshot["liveIndicatorCount"] = 6
+        snapshot["freshIndicatorCount"] = 6
+        snapshot["freshIndicatorIds"] = [
+            "pir", "volume", "unpopular", "subscription", "rate", "supply"
+        ]
+        snapshot["history"] = [64]
+        snapshot["historyLabels"] = ["2026 7월"]
+        with self.assertRaisesRegex(ValueError, "at least 24 months"):
+            validate_snapshot(snapshot, require_live=True)
+
+    def test_static_export_rejects_short_expansion_history(self):
+        snapshot = load_fixture()
+        snapshot["dataMode"] = "live"
+        snapshot["liveIndicatorCount"] = 6
+        snapshot["freshIndicatorCount"] = 6
+        snapshot["freshIndicatorIds"] = [
+            "pir", "volume", "unpopular", "subscription", "rate", "supply"
+        ]
+        expansion = next(row for row in snapshot["indicators"] if row["id"] == "unpopular")
+        expansion["rawHistory"] = [58]
+        expansion["historyLabels"] = ["2026 7월"]
+        with self.assertRaisesRegex(ValueError, "unpopular history"):
             validate_snapshot(snapshot, require_live=True)
 
     def test_expansion_signal_is_small_positive_bonus(self):

@@ -42,6 +42,17 @@ def validate_snapshot(snapshot: dict, require_live: bool = False) -> None:
             "Production snapshot must freshly collect all six indicators "
             f"(fresh: {fresh_ids})"
         )
+    indicator_by_id = {item["id"]: item for item in indicators}
+    minimum_history = {"unpopular": 24, "supply": 10}
+    if require_live and len(snapshot["history"]) < 24:
+        raise ValueError("Production composite history must contain at least 24 months")
+    for indicator_id, minimum in minimum_history.items():
+        values = indicator_by_id[indicator_id].get("rawHistory") or []
+        labels = indicator_by_id[indicator_id].get("historyLabels") or []
+        if require_live and (len(values) < minimum or len(values) != len(labels)):
+            raise ValueError(
+                f"Production {indicator_id} history must contain at least {minimum} aligned observations"
+            )
 
 
 def export_snapshot(output: Path, month: str | None, require_live: bool) -> dict:
