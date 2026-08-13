@@ -15,7 +15,7 @@ from backend.macro_store import MacroStore
 from backend.seoul_supply import SeoulSupplyClient
 from backend.kb_supply import KBSupplyClient
 from backend.snapshot import (
-    load_fixture, with_composite_history, with_price_history, with_live_affordability, with_live_kb_supply, with_live_liquidity, with_live_rate, with_live_supply,
+    load_fixture, merge_composite_history, with_price_history, with_live_affordability, with_live_kb_supply, with_live_liquidity, with_live_rate, with_live_supply,
     with_live_subscription, with_live_unsold, with_live_volume,
 )
 from backend.subscription import SubscriptionClient, build_subscription_snapshot
@@ -151,7 +151,7 @@ def build_snapshot(year_month: str | None = None) -> dict:
         except Exception as error:
             warnings = snapshot.setdefault("dataWarnings", [])
             warnings.append(f"Seoul price index unavailable: {type(error).__name__}")
-        snapshot = with_composite_history(snapshot, macro_store.composite_scores(240))
+        snapshot = merge_composite_history(snapshot, macro_store.composite_scores(240))
         price_history = macro_store.seoul_apartment_prices(240)
         if price_history:
             snapshot = with_price_history(snapshot, price_history)

@@ -110,6 +110,22 @@ def with_composite_history(snapshot: dict, history: list[tuple[str, int]]) -> di
     return result
 
 
+def _month_key(label: str) -> str:
+    year, month = label.replace("월", "").split()
+    return f"{year}{int(month):02d}"
+
+
+def merge_composite_history(snapshot: dict, history: list[tuple[str, int]]) -> dict:
+    merged = {
+        _month_key(label): score
+        for label, score in zip(
+            snapshot.get("historyLabels", []), snapshot.get("history", [])
+        )
+    }
+    merged.update(dict(history))
+    return with_composite_history(snapshot, sorted(merged.items()))
+
+
 def with_price_history(snapshot: dict, history: list[tuple[str, float]]) -> dict:
     result = copy.deepcopy(snapshot)
     result["priceHistory"] = [value for _, value in history]
@@ -518,6 +534,15 @@ def with_live_liquidity(base: dict, liquidity: LiquiditySnapshot) -> dict:
     snapshot = copy.deepcopy(base)
     indicator = next(item for item in snapshot["indicators"] if item["id"] == "unpopular")
     change = liquidity.recent_share_percent - liquidity.baseline_share_percent
+    existing_history = {
+        _month_key(label): score
+        for label, score in zip(
+            indicator.get("historyLabels", []),
+            indicator.get("rawHistory") or indicator.get("history", []),
+        )
+    }
+    existing_history.update(zip(liquidity.history_months, liquidity.history_scores))
+    merged_history = sorted(existing_history.items())
     indicator.update({
         "title": "비인기 거래 확산도 Beta",
         "shortTitle": "확산도 Beta",
@@ -533,10 +558,10 @@ def with_live_liquidity(base: dict, liquidity: LiquiditySnapshot) -> dict:
             f"그중 {liquidity.record_high_share_percent:.1f}%가 이전 21개월 최고가 이상이에요. "
             "백테스트 검증 전까지 종합 고점점수에는 반영하지 않아요."
         ),
-        "history": liquidity.history_scores,
-        "rawHistory": liquidity.history_scores,
+        "history": [score for _, score in merged_history],
+        "rawHistory": [score for _, score in merged_history],
         "historyLabels": [
-            f"{month[:4]} {int(month[4:])}월" for month in liquidity.history_months
+            f"{month[:4]} {int(month[4:])}월" for month, _ in merged_history
         ],
         "historyUnit": "확산지수",
     })

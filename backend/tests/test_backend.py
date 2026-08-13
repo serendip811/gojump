@@ -43,7 +43,7 @@ from backend.seoul_supply import SeoulSupplyClient, SupplySnapshot, calculate_su
 from backend.kb_supply import KBSupplyClient, KBSupplySnapshot, SupplyObservation
 from backend.snapshot import (
     WEIGHTS, calculate_score, expansion_signal, load_fixture, volume_score, volume_score_from_history,
-    with_composite_history, with_price_history, with_live_affordability, with_live_liquidity, with_live_rate, with_live_supply,
+    merge_composite_history, with_composite_history, with_price_history, with_live_affordability, with_live_liquidity, with_live_rate, with_live_supply,
     with_live_kb_supply, with_live_subscription, with_live_unsold, with_live_volume,
 )
 from backend.trade_store import TradeStore
@@ -202,6 +202,13 @@ class SnapshotTests(unittest.TestCase):
         result = with_composite_history(load_fixture(), history)
         self.assertEqual(result["history"], list(range(41, 53)) + [64])
         self.assertEqual(result["historyLabels"][-1], "2026 1월")
+
+    def test_composite_history_merges_fixture_and_latest_actual_month(self):
+        fixture = load_fixture()
+        result = merge_composite_history(fixture, [("202607", 64), ("202608", 66)])
+        self.assertGreaterEqual(len(result["history"]), len(fixture["history"]))
+        self.assertEqual(result["historyLabels"][-2:], ["2026 7월", "2026 8월"])
+        self.assertEqual(result["history"][-2:], [64, 66])
 
     def test_price_history_keeps_values_and_month_labels(self):
         result = with_price_history(load_fixture(), [("202512", 99.1), ("202601", 100.0)])
