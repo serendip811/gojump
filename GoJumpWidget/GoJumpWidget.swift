@@ -152,7 +152,9 @@ struct GoJumpWidgetView: View {
 
     private var widgetUpdateLabel: String {
         if let generated = entry.snapshot.generatedAtLabel {
-            return entry.snapshot.isStale() ? "지연 · \(generated)" : generated
+            if entry.snapshot.isStale() { return "지연 · \(generated)" }
+            if entry.snapshot.usesPreviousIndicatorValues { return "이전값 포함 · \(generated)" }
+            return generated
         }
         return "\(entry.snapshot.asOf) 기준"
     }

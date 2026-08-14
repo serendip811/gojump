@@ -274,6 +274,9 @@ struct HomeView: View {
             }
             return ("저장 데이터", "internaldrive.fill", AppTheme.secondary)
         default:
+            if snapshot.usesPreviousIndicatorValues {
+                return ("일부 이전값", "clock.arrow.circlepath", AppTheme.accent)
+            }
             switch snapshot.dataMode {
             case "live": return nil
             case "partialLive": return ("일부 실데이터", "exclamationmark.circle.fill", AppTheme.accent)
@@ -378,6 +381,12 @@ struct HomeView: View {
             } else if snapshot.dataMode == "partialLive" {
                 let liveCount = snapshot.liveIndicatorCount ?? 1
                 Label("현재 \(liveCount)개 지표가 실데이터이며 나머지 \(6 - liveCount)개는 샘플입니다.", systemImage: "exclamationmark.circle.fill")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(AppTheme.accent)
+            } else if snapshot.usesPreviousIndicatorValues {
+                let titles = snapshot.previousValueIndicatorTitles
+                let subject = titles.isEmpty ? "일부 지표" : titles.joined(separator: "·")
+                Label("\(subject)은 이전 발표값을 사용 중이에요.", systemImage: "clock.arrow.circlepath")
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(AppTheme.accent)
             } else if snapshot.dataMode == "fixture" || snapshot.dataMode == "sample" {

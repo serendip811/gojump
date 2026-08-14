@@ -47,6 +47,34 @@ final class ScoreCalculatorTests: XCTestCase {
         )
     }
 
+    func testSnapshotIdentifiesIndicatorsUsingPreviousValues() throws {
+        let liveJSON = try JSONEncoder().encode(MarketSnapshot.sample)
+        var object = try XCTUnwrap(JSONSerialization.jsonObject(with: liveJSON) as? [String: Any])
+        object["dataMode"] = "live"
+        object["freshIndicatorCount"] = 3
+        object["freshIndicatorIds"] = ["pir", "rate", "supply"]
+        object["dataWarnings"] = ["MOLIT refresh unavailable", "Subscription unavailable"]
+        let data = try JSONSerialization.data(withJSONObject: object)
+        let snapshot = try JSONDecoder().decode(MarketSnapshot.self, from: data)
+
+        XCTAssertTrue(snapshot.usesPreviousIndicatorValues)
+        XCTAssertEqual(snapshot.previousValueIndicatorTitles, ["거래량", "확산도 Beta", "청약 수요"])
+        XCTAssertEqual(snapshot.dataWarnings?.count, 2)
+    }
+
+    func testSnapshotKeepsNormalLiveStateQuietWhenAllIndicatorsAreFresh() throws {
+        let liveJSON = try JSONEncoder().encode(MarketSnapshot.sample)
+        var object = try XCTUnwrap(JSONSerialization.jsonObject(with: liveJSON) as? [String: Any])
+        object["dataMode"] = "live"
+        object["freshIndicatorCount"] = 6
+        object["freshIndicatorIds"] = ["pir", "volume", "unpopular", "subscription", "rate", "supply"]
+        let data = try JSONSerialization.data(withJSONObject: object)
+        let snapshot = try JSONDecoder().decode(MarketSnapshot.self, from: data)
+
+        XCTAssertFalse(snapshot.usesPreviousIndicatorValues)
+        XCTAssertTrue(snapshot.previousValueIndicatorTitles.isEmpty)
+    }
+
     func testIndicatorDecodesRawHistory() throws {
         let json = #"{"id":"pir","title":"서울 주택구입부담","shortTitle":"구입부담","score":89,"trend":"up","value":"179.3","change":"1년 +23.6p","symbol":"house.fill","explanation":"설명","insight":"해석","source":"HOUSTAT","observedAt":"2026년 1분기","history":[78,83,90],"rawHistory":[155.2,165.1,179.3],"historyLabels":["2025 3Q","2025 4Q","2026 1Q"],"historyUnit":"K-HAI"}"#
         let indicator = try JSONDecoder().decode(MarketIndicator.self, from: Data(json.utf8))

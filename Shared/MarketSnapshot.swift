@@ -85,10 +85,27 @@ struct MarketSnapshot: Codable, Sendable {
     var priceHistoryUnit: String? = nil
     let dataMode: String?
     let liveIndicatorCount: Int?
+    var freshIndicatorCount: Int? = nil
+    var freshIndicatorIds: [String]? = nil
+    var dataWarnings: [String]? = nil
     let indicators: [MarketIndicator]
 
     var level: MarketLevel { .from(score: score) }
     var strongestIndicator: MarketIndicator? { indicators.max { $0.score < $1.score } }
+
+    var usesPreviousIndicatorValues: Bool {
+        guard dataMode == "live" || dataMode == "partialLive",
+              let freshIndicatorCount else { return false }
+        return freshIndicatorCount < indicators.count
+    }
+
+    var previousValueIndicatorTitles: [String] {
+        guard usesPreviousIndicatorValues, let freshIndicatorIds else { return [] }
+        let fresh = Set(freshIndicatorIds)
+        return indicators
+            .filter { !fresh.contains($0.id) }
+            .map(\.shortTitle)
+    }
 
     var generatedDate: Date? {
         guard let generatedAt else { return nil }
