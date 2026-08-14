@@ -8,7 +8,7 @@ struct OnboardingView: View {
             AppTheme.background.ignoresSafeArea()
             VStack(alignment: .leading, spacing: 0) {
                 Spacer()
-                Text("GO—JUMP")
+                Text("아파트고점지수")
                     .font(.caption.weight(.bold))
                     .tracking(2.4)
                     .foregroundStyle(AppTheme.accent)

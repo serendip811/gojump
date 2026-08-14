@@ -1,4 +1,4 @@
-# 아파트 고점 지수 iOS Prototype
+# 아파트고점지수 iOS 앱
 
 서울 주택 시장의 여섯 가지 과열 신호를 보여주는 SwiftUI 앱과 WidgetKit 위젯 프로토타입입니다. 앱은 GitHub Pages에 배포된 최신 시장 스냅샷을 읽고, 연결할 수 없으면 마지막 저장 데이터 또는 내장 샘플을 표시합니다.
 
@@ -49,4 +49,4 @@ https://serendip811.github.io/gojump/api/v1/markets/seoul/snapshot.json
 - `GoJumpWidget`: Small·Medium 위젯
 - `Shared`: 앱과 위젯이 함께 사용하는 모델과 점수 계산
 - `GoJumpTests`: 점수 단계와 가중치 계산 테스트
-- `backend`: 국토부 실거래가 수집기와 GoJump 스냅샷 API
+- `backend`: 국토부 실거래가 수집기와 아파트고점지수 스냅샷 API

@@ -58,7 +58,7 @@ struct GoJumpWidgetView: View {
     private var small: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack {
-                Text("아파트 고점 지수").font(.caption2.bold())
+                Text("아파트고점지수").font(.caption2.bold())
                 Spacer()
                 Text(entry.snapshot.market).font(.caption2).foregroundStyle(.secondary)
             }
@@ -177,7 +177,7 @@ struct GoJumpMarketWidget: Widget {
                 .containerBackground(Color(red: 0.965, green: 0.957, blue: 0.937), for: .widget)
                 .widgetURL(URL(string: "gojump://market"))
         }
-        .configurationDisplayName("아파트 고점 지수")
+        .configurationDisplayName("아파트고점지수")
         .description("서울 주택 시장의 여섯 가지 신호를 확인하세요.")
         .supportedFamilies([
             .systemSmall, .systemMedium,

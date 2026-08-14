@@ -15,7 +15,7 @@ struct SettingsView: View {
                 Button("온보딩 다시 보기") { didFinishOnboarding = false }
             }
             Section {
-                Text("GoJump은 교육 및 정보 제공 목적이며 부동산·금융·투자 자문이 아닙니다.")
+                Text("아파트고점지수는 교육 및 정보 제공 목적이며 부동산·금융·투자 자문이 아닙니다.")
                     .font(.caption)
                     .foregroundStyle(AppTheme.secondary)
             }

@@ -37,7 +37,7 @@ struct HomeView: View {
     private var header: some View {
         HStack(alignment: .bottom) {
             VStack(alignment: .leading, spacing: 9) {
-                Text("GO—JUMP")
+                Text("아파트고점지수")
                     .font(.caption.weight(.bold))
                     .tracking(2.2)
                     .foregroundStyle(AppTheme.accent)
