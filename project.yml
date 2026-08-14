@@ -8,7 +8,7 @@ options:
 settings:
   base:
     SWIFT_VERSION: "6.0"
-    MARKETING_VERSION: "0.1.0"
+    MARKETING_VERSION: "1.0.0"
     CURRENT_PROJECT_VERSION: "1"
     DEVELOPMENT_TEAM: ""
 targets:
@@ -33,6 +33,8 @@ targets:
       path: GoJumpApp/Info.plist
       properties:
         CFBundleDisplayName: 아파트고점지수
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         CFBundleURLTypes:
           - CFBundleURLName: kr.gojump.app
             CFBundleURLSchemes:
@@ -67,6 +69,8 @@ targets:
       path: GoJumpWidget/Info.plist
       properties:
         CFBundleDisplayName: 아파트고점지수
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         GOJUMP_SNAPSHOT_URL: https://serendip811.github.io/gojump/api/v1/markets/seoul/snapshot.json
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension

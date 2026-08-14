@@ -41,7 +41,14 @@ python3 -m backend.server --port 8080
 https://serendip811.github.io/gojump/api/v1/markets/seoul/snapshot.json
 ```
 
-워크플로는 매일 서울 시간 오전 6시 17분에 실행됩니다. 최초 실행은 최근 60개월 실거래를 SQLite에 채우므로 오래 걸릴 수 있으며 이후 실행은 Actions cache를 복원해 증분 갱신합니다. 생성 또는 검증이 실패하면 Pages 배포 단계가 실행되지 않아 직전 정상 JSON이 유지됩니다.
+워크플로는 매일 서울 시간 오전 6시 17분에 실행됩니다. Actions cache의 공식 수집 데이터를 복원해 최신 스냅샷을 갱신하며, 생성 또는 검증이 실패하면 Pages 배포 단계가 실행되지 않아 직전 정상 JSON이 유지됩니다.
+
+GitHub Pages는 앱 데이터와 함께 아래 공개 문서를 제공합니다.
+
+- `/privacy/`: 개인정보처리방침
+- `/support/`: 사용자 지원
+- `/sources/`: 데이터 출처와 해석 원칙
+- `/health.json`: 최근 데이터 배포 상태
 
 ## 구조
 
