@@ -74,7 +74,7 @@ struct HomeView: View {
     private var hero: some View {
         VStack(alignment: .leading, spacing: 20) {
             HStack {
-                Text("고점 신호")
+                Text("현재 판단")
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(AppTheme.secondary)
                 Spacer()
@@ -86,44 +86,45 @@ struct HomeView: View {
                     .foregroundStyle(AppTheme.secondary)
             }
 
-            HStack(alignment: .bottom, spacing: 12) {
-                HStack(alignment: .lastTextBaseline, spacing: 8) {
-                    Text("\(snapshot.score)")
-                        .font(.system(size: 88, weight: .bold, design: .rounded))
-                        .tracking(-3)
-                    Text("/ 100")
-                        .font(.title3.weight(.medium))
-                        .foregroundStyle(AppTheme.secondary)
-                        .padding(.bottom, 11)
-                }
-                Spacer(minLength: 12)
-                VStack(alignment: .trailing, spacing: 12) {
-                    Text(snapshot.level.title)
-                        .font(.headline)
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 18)
-                        .padding(.vertical, 10)
-                        .background(snapshot.level.color, in: RoundedRectangle(cornerRadius: 8))
-                    Label(
-                        snapshot.deltaLabel ?? "7일간 \(snapshot.delta7d >= 0 ? "+" : "")\(snapshot.delta7d)",
-                        systemImage: snapshot.deltaLabel?.contains("반영") == true
-                            ? "arrow.triangle.2.circlepath"
-                            : snapshot.delta7d >= 0 ? "arrow.up.right" : "arrow.down.right"
-                    )
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(AppTheme.accent)
-                }
-                .padding(.bottom, 9)
-            }
+            Text(snapshot.effectiveVerdict.title)
+                .font(.system(size: 34, weight: .bold, design: .rounded))
+                .foregroundStyle(AppTheme.ink)
 
-            Divider().overlay(AppTheme.line)
-
-            Text(snapshot.summary.replacingOccurrences(of: "\n", with: " "))
+            Text(snapshot.effectiveVerdict.summary)
                 .font(.title3.weight(.medium))
                 .lineSpacing(5)
-                .foregroundStyle(AppTheme.ink)
-                .fixedSize(horizontal: false, vertical: true)
+                .foregroundStyle(AppTheme.secondary)
+
+            HStack(spacing: 0) {
+                scoreColumn(
+                    title: "가격 부담도", score: snapshot.effectivePriceBurdenScore,
+                    detail: "소득·금리 대비", color: AppTheme.accent
+                )
+                Divider().overlay(AppTheme.line).padding(.horizontal, 18)
+                scoreColumn(
+                    title: "고점 전환 신호", score: snapshot.effectiveTransitionScore,
+                    detail: "거래·청약 냉각", color: AppTheme.rateBenchmark
+                )
+            }
+            .padding(18)
+            .background(AppTheme.card, in: RoundedRectangle(cornerRadius: 18))
+
+            Divider().overlay(AppTheme.line)
         }
+    }
+
+    private func scoreColumn(title: String, score: Int, detail: String, color: Color) -> some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Text(title).font(.caption.weight(.semibold)).foregroundStyle(AppTheme.secondary)
+            HStack(alignment: .lastTextBaseline, spacing: 4) {
+                Text("\(score)")
+                    .font(.system(size: 40, weight: .bold, design: .rounded))
+                    .foregroundStyle(color)
+                Text("/100").font(.caption).foregroundStyle(AppTheme.secondary)
+            }
+            Text(detail).font(.caption2).foregroundStyle(AppTheme.secondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     @ViewBuilder private var strongestSignal: some View {
@@ -136,7 +137,7 @@ struct HomeView: View {
                         .frame(width: 44, height: 44)
                         .background(AppTheme.paleAccent, in: Circle())
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("가장 강한 신호")
+                        Text("주요 근거")
                             .font(.caption)
                             .foregroundStyle(AppTheme.secondary)
                         Text("\(item.title)  \(item.score)")
@@ -184,14 +185,13 @@ struct HomeView: View {
     }
 
     private var historySection: some View {
-        let points = compositeHistoryPoints
-        let pricePoints = compositePricePoints
-        let priceDomain = compositePriceDomain
+        let burdenPoints = priceBurdenHistoryPoints
+        let transitionPoints = transitionHistoryPoints
         return VStack(alignment: .leading, spacing: 16) {
-            Text("종합점수 추이").font(.title2.bold())
+            Text("시장 신호 추이").font(.title2.bold())
             HStack(spacing: 18) {
-                chartLegend(title: "종합점수", color: AppTheme.accent)
-                chartLegend(title: "서울 아파트 가격지수", color: AppTheme.rateBenchmark)
+                chartLegend(title: "가격 부담도", color: AppTheme.accent)
+                chartLegend(title: "고점 전환", color: AppTheme.rateBenchmark)
                 Spacer()
             }
             Picker("조회 기간", selection: $compositeRange) {
@@ -203,21 +203,21 @@ struct HomeView: View {
             .onChange(of: compositeRange) { _, _ in selectedCompositeIndex = nil }
             Chart {
                 InteractiveSelectionMarks(selection: compositeChartSelection)
-                ForEach(points) { point in
-                    LineMark(x: .value("월", point.index), y: .value("점수", point.score), series: .value("계열", "score"))
+                ForEach(burdenPoints) { point in
+                    LineMark(x: .value("월", point.index), y: .value("점수", point.score), series: .value("계열", "burden"))
                         .foregroundStyle(AppTheme.accent)
                         .lineStyle(.init(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
-                    if point.index == points.last?.index {
+                    if point.index == burdenPoints.last?.index {
                         PointMark(x: .value("월", point.index), y: .value("점수", point.score))
                             .foregroundStyle(AppTheme.accent)
                     }
                 }
-                ForEach(pricePoints) { point in
-                    LineMark(x: .value("월", point.index), y: .value("가격 환산", point.normalizedValue), series: .value("계열", "price"))
+                ForEach(transitionPoints) { point in
+                    LineMark(x: .value("월", point.index), y: .value("점수", point.score), series: .value("계열", "transition"))
                         .foregroundStyle(AppTheme.rateBenchmark)
                         .lineStyle(.init(lineWidth: 2.2, lineCap: .round, lineJoin: .round))
-                    if point.index == pricePoints.last?.index {
-                        PointMark(x: .value("월", point.index), y: .value("가격 환산", point.normalizedValue))
+                    if point.index == transitionPoints.last?.index {
+                        PointMark(x: .value("월", point.index), y: .value("점수", point.score))
                             .foregroundStyle(AppTheme.rateBenchmark)
                     }
                 }
@@ -235,20 +235,12 @@ struct HomeView: View {
                         }
                     }
                 }
-                AxisMarks(position: .trailing, values: [0, 25, 50, 75, 100]) { value in
-                    AxisValueLabel {
-                        if let normalized = value.as(Double.self) {
-                            Text(priceAxisLabel(normalized, domain: priceDomain))
-                                .foregroundStyle(AppTheme.rateBenchmark)
-                        }
-                    }
-                }
             }
             .frame(height: 170)
             HStack(alignment: .top, spacing: 0) {
-                let indexes = compositeAxisIndexes(count: points.count)
+                let indexes = compositeAxisIndexes(count: burdenPoints.count)
                 ForEach(Array(indexes.enumerated()), id: \.element) { position, index in
-                    let parts = points[index].label.split(separator: " ")
+                    let parts = burdenPoints[index].label.split(separator: " ")
                     Text(parts.joined(separator: "\n"))
                         .font(.caption)
                         .foregroundStyle(AppTheme.secondary)
@@ -292,70 +284,55 @@ struct HomeView: View {
         }
     }
 
-    private var compositeHistoryPoints: [CompositeHistoryPoint] {
-        let labels = snapshot.historyLabels ?? snapshot.history.indices.map { "\($0 + 1)월" }
-        let count = min(snapshot.history.count, labels.count)
+    private var priceBurdenHistoryPoints: [CompositeHistoryPoint] {
+        let values = snapshot.effectivePriceBurdenHistory
+        let labels = snapshot.effectivePriceBurdenHistoryLabels ?? values.indices.map { "\($0 + 1)월" }
+        let count = min(values.count, labels.count)
         let start = max(0, count - compositeRange.monthCount)
         return (start..<count).enumerated().map { localIndex, sourceIndex in
             CompositeHistoryPoint(
                 index: localIndex,
-                score: snapshot.history[sourceIndex],
+                score: values[sourceIndex],
                 label: labels[sourceIndex]
             )
         }
     }
 
-    private var compositePricePoints: [CompositePricePoint] {
-        let labels = snapshot.priceHistoryLabels ?? []
-        let values = snapshot.priceHistory ?? []
+    private var transitionHistoryPoints: [CompositeHistoryPoint] {
+        let labels = snapshot.effectiveTransitionHistoryLabels ?? []
+        let values = snapshot.effectiveTransitionHistory
         let count = min(labels.count, values.count)
         let valueByLabel = Dictionary(uniqueKeysWithValues: (0..<count).map { (labels[$0], values[$0]) })
-        let domain = compositePriceDomain
-        return compositeHistoryPoints.compactMap { scorePoint in
+        return priceBurdenHistoryPoints.compactMap { scorePoint in
             guard let value = valueByLabel[scorePoint.label] else { return nil }
-            let normalized = (value - domain.lowerBound) / (domain.upperBound - domain.lowerBound) * 100
-            return CompositePricePoint(index: scorePoint.index, value: value, normalizedValue: normalized)
+            return CompositeHistoryPoint(index: scorePoint.index, score: value, label: scorePoint.label)
         }
     }
 
-    private var selectedCompositePoint: (score: CompositeHistoryPoint, price: CompositePricePoint?)? {
+    private var selectedCompositePoint: (burden: CompositeHistoryPoint, transition: CompositeHistoryPoint?)? {
         guard let selectedCompositeIndex,
-              let score = compositeHistoryPoints.first(where: { $0.index == selectedCompositeIndex }) else {
+              let burden = priceBurdenHistoryPoints.first(where: { $0.index == selectedCompositeIndex }) else {
             return nil
         }
-        return (score, compositePricePoints.first(where: { $0.index == selectedCompositeIndex }))
+        return (burden, transitionHistoryPoints.first(where: { $0.index == selectedCompositeIndex }))
     }
 
     private var compositeChartSelection: InteractiveChartSelection? {
         guard let selected = selectedCompositePoint else { return nil }
         var values = [
             InteractiveChartValue(
-                title: "점수", displayValue: "\(selected.score.score)",
-                plotValue: Double(selected.score.score), color: AppTheme.accent
+                title: "부담", displayValue: "\(selected.burden.score)",
+                plotValue: Double(selected.burden.score), color: AppTheme.accent
             )
         ]
-        if let price = selected.price {
+        if let transition = selected.transition {
             values.append(InteractiveChartValue(
-                title: "가격",
-                displayValue: price.value.formatted(.number.precision(.fractionLength(1))),
-                plotValue: price.normalizedValue,
+                title: "전환", displayValue: "\(transition.score)",
+                plotValue: Double(transition.score),
                 color: AppTheme.rateBenchmark
             ))
         }
-        return InteractiveChartSelection(index: selected.score.index, label: selected.score.label, values: values)
-    }
-
-    private var compositePriceDomain: ClosedRange<Double> {
-        let values = snapshot.priceHistory ?? []
-        guard let minimum = values.min(), let maximum = values.max() else { return 80...110 }
-        let lower = floor(minimum / 10) * 10
-        let upper = ceil(maximum / 10) * 10
-        return lower...(upper > lower ? upper : lower + 10)
-    }
-
-    private func priceAxisLabel(_ normalized: Double, domain: ClosedRange<Double>) -> String {
-        let value = domain.lowerBound + normalized / 100 * (domain.upperBound - domain.lowerBound)
-        return value.formatted(.number.precision(.fractionLength(0)))
+        return InteractiveChartSelection(index: selected.burden.index, label: selected.burden.label, values: values)
     }
 
     private func compositeAxisIndexes(count: Int) -> [Int] {
@@ -394,7 +371,7 @@ struct HomeView: View {
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(AppTheme.accent)
             }
-            Text("이 점수는 시장 관찰을 돕는 참고 정보이며 미래 가격이나 매수 시점을 예측하지 않습니다.")
+            Text("가격 부담도는 현재의 비싼 정도, 고점 전환 신호는 거래·청약의 냉각 정도를 보여줍니다. 두 점수 모두 미래 가격이나 정확한 매수 시점을 예측하지 않습니다.")
                 .font(.caption)
                 .foregroundStyle(AppTheme.secondary)
                 .lineSpacing(4)
@@ -428,13 +405,6 @@ private struct CompositeHistoryPoint: Identifiable {
     let index: Int
     let score: Int
     let label: String
-    var id: Int { index }
-}
-
-private struct CompositePricePoint: Identifiable {
-    let index: Int
-    let value: Double
-    let normalizedValue: Double
     var id: Int { index }
 }
 

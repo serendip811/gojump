@@ -63,17 +63,13 @@ struct GoJumpWidgetView: View {
                 Text(entry.snapshot.market).font(.caption2).foregroundStyle(.secondary)
             }
             Spacer()
-            HStack(alignment: .lastTextBaseline, spacing: 5) {
-                Text("\(entry.snapshot.score)")
-                    .font(.system(size: 48, weight: .bold, design: .rounded))
-                Text(entry.snapshot.level.title)
-                    .font(.subheadline.bold())
-                    .foregroundStyle(levelColor)
-            }
-            if let strongest = entry.snapshot.strongestIndicator {
-                Label("\(strongest.shortTitle) \(strongest.score)", systemImage: strongest.symbol)
-                    .font(.caption2.weight(.semibold))
-                    .lineLimit(1)
+            Text(entry.snapshot.effectiveVerdict.title)
+                .font(.subheadline.bold())
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+            HStack(spacing: 14) {
+                widgetScore("부담", entry.snapshot.effectivePriceBurdenScore)
+                widgetScore("전환", entry.snapshot.effectiveTransitionScore)
             }
             HStack {
                 Text(widgetUpdateLabel)
@@ -88,11 +84,14 @@ struct GoJumpWidgetView: View {
     private var medium: some View {
         HStack(spacing: 16) {
             VStack(alignment: .leading, spacing: 6) {
-                Text("서울 · 고점 신호").font(.caption.bold())
-                Text("\(entry.snapshot.score)").font(.system(size: 50, weight: .bold, design: .rounded))
-                Text(entry.snapshot.level.title)
+                Text("서울 · 현재 판단").font(.caption.bold())
+                Text(entry.snapshot.effectiveVerdict.title)
                     .font(.headline)
-                    .foregroundStyle(levelColor)
+                    .lineLimit(2)
+                HStack(spacing: 12) {
+                    widgetScore("부담", entry.snapshot.effectivePriceBurdenScore)
+                    widgetScore("전환", entry.snapshot.effectiveTransitionScore)
+                }
                 Spacer()
                 Text("\(widgetUpdateLabel)\(isSample ? " · 샘플" : "")")
                     .font(.caption2)
@@ -117,33 +116,33 @@ struct GoJumpWidgetView: View {
     }
 
     private var accessoryCircular: some View {
-        Gauge(value: Double(entry.snapshot.score), in: 0...100) {
-            Text("서울")
+        Gauge(value: Double(entry.snapshot.effectiveTransitionScore), in: 0...100) {
+            Text("전환")
         } currentValueLabel: {
-            Text("\(entry.snapshot.score)").font(.headline)
+            Text("\(entry.snapshot.effectiveTransitionScore)").font(.headline)
         }
         .gaugeStyle(.accessoryCircularCapacity)
         .widgetAccentable()
     }
 
     private var accessoryRectangular: some View {
-        HStack(spacing: 8) {
-            Text("\(entry.snapshot.score)")
-                .font(.system(size: 30, weight: .bold, design: .rounded))
-                .widgetAccentable()
-            VStack(alignment: .leading, spacing: 2) {
-                Text("서울 · \(entry.snapshot.level.title)").font(.headline)
-                if let strongest = entry.snapshot.strongestIndicator {
-                    Text("\(strongest.shortTitle) \(strongest.score)")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
+        VStack(alignment: .leading, spacing: 3) {
+            Text("서울 · \(entry.snapshot.effectiveVerdict.title)").font(.headline)
+            Text("가격 부담 \(entry.snapshot.effectivePriceBurdenScore) · 고점 전환 \(entry.snapshot.effectiveTransitionScore)")
+                .font(.caption)
+                .foregroundStyle(.secondary)
         }
     }
 
     private var accessoryInline: some View {
-        Text("서울 \(entry.snapshot.score) · \(entry.snapshot.level.title)")
+        Text("서울 부담 \(entry.snapshot.effectivePriceBurdenScore) · 전환 \(entry.snapshot.effectiveTransitionScore)")
+    }
+
+    private func widgetScore(_ title: String, _ score: Int) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text(title).font(.caption2).foregroundStyle(.secondary)
+            Text("\(score)").font(.title2.bold()).monospacedDigit()
+        }
     }
 
     private var isSample: Bool {
@@ -159,15 +158,6 @@ struct GoJumpWidgetView: View {
         return "\(entry.snapshot.asOf) 기준"
     }
 
-    private var levelColor: Color {
-        switch entry.snapshot.level {
-        case .stable: Color(red: 0.18, green: 0.49, blue: 0.42)
-        case .watch: Color(red: 0.55, green: 0.50, blue: 0.28)
-        case .caution: Color(red: 0.79, green: 0.54, blue: 0.14)
-        case .alert: Color(red: 0.78, green: 0.27, blue: 0.08)
-        case .highRisk: Color(red: 0.64, green: 0.12, blue: 0.10)
-        }
-    }
 }
 
 struct GoJumpMarketWidget: Widget {
@@ -178,7 +168,7 @@ struct GoJumpMarketWidget: Widget {
                 .widgetURL(URL(string: "gojump://market"))
         }
         .configurationDisplayName("아파트고점지수")
-        .description("서울 주택 시장의 여섯 가지 신호를 확인하세요.")
+        .description("서울의 가격 부담도와 고점 전환 신호를 확인하세요.")
         .supportedFamilies([
             .systemSmall, .systemMedium,
             .accessoryCircular, .accessoryRectangular, .accessoryInline,

@@ -16,6 +16,8 @@ from backend.subscription import SubscriptionSnapshot
 
 FIXTURE_PATH = Path(__file__).parent / "fixtures" / "snapshot.json"
 WEIGHTS = {"pir": .25, "volume": .20, "subscription": .15, "rate": .15, "supply": .15}
+PRICE_BURDEN_WEIGHTS = {"pir": .75, "rate": .25}
+TRANSITION_WEIGHTS = {"volume": .55, "subscription": .45}
 COMPOSITE_FIXTURE_SCORES = [
     57, 52, 53, 55, 56, 56, 60, 71, 72, 70, 72, 79,
     85, 89, 90, 91, 88, 84, 86, 82, 87, 88, 88, 88,
@@ -48,7 +50,7 @@ def load_fixture() -> dict:
         expansion["change"] = stage
         expansion["insight"] = (
             f"현재 단계는 ‘{stage}’이에요. 확산 파생점수는 {phase_score}점이며 "
-            f"종합점수에는 {bonus:.1f}점만 보조 반영해요."
+            "검증 중인 실험 지표라 두 핵심 점수에는 반영하지 않아요."
         )
     snapshot["score"] = calculate_score(snapshot["indicators"])
     snapshot["level"] = level_for(snapshot["score"])
@@ -63,7 +65,70 @@ def load_fixture() -> dict:
         (period, PRICE_FIXTURE_VALUES[index])
         for index, (period, _) in enumerate(fixture_history)
     ])
-    return snapshot
+    return with_dual_scores(snapshot)
+
+
+def _weighted_indicator_score(indicators: list[dict], weights: dict[str, float]) -> int:
+    scores = {item.get("id"): int(item["score"]) for item in indicators}
+    missing = weights.keys() - scores.keys()
+    if missing:
+        raise ValueError(f"Missing dual-score indicators: {', '.join(sorted(missing))}")
+    return round(sum(scores[key] * weight for key, weight in weights.items()))
+
+
+def verdict_for(price_burden_score: int, transition_score: int) -> str:
+    if price_burden_score >= 65 and transition_score >= 65:
+        return "고점 경계"
+    if price_burden_score >= 65:
+        return "가격 부담 높음"
+    if transition_score >= 65:
+        return "수요 위축 관찰"
+    return "안정 구간"
+
+
+def with_dual_scores(
+    snapshot: dict,
+    price_burden_history: list[tuple[str, int]] | None = None,
+    transition_history: list[tuple[str, int]] | None = None,
+) -> dict:
+    """Attach the two decision scores while preserving the legacy composite score."""
+    result = copy.deepcopy(snapshot)
+    indicators = result["indicators"]
+    burden = _weighted_indicator_score(indicators, PRICE_BURDEN_WEIGHTS)
+    transition = _weighted_indicator_score(indicators, TRANSITION_WEIGHTS)
+    result["priceBurdenScore"] = burden
+    result["transitionScore"] = transition
+    result["verdict"] = verdict_for(burden, transition)
+
+    # Fixtures have score-only indicator histories. Align their tails to the legacy
+    # monthly labels without inventing a shared timeline for the two new series.
+    if price_burden_history is None:
+        price_burden_history = _fixture_dual_history(result, PRICE_BURDEN_WEIGHTS)
+    if transition_history is None:
+        transition_history = _fixture_dual_history(result, TRANSITION_WEIGHTS)
+    result["priceBurdenHistory"] = [score for _, score in price_burden_history]
+    result["priceBurdenHistoryLabels"] = [
+        f"{period[:4]} {int(period[4:])}월" for period, _ in price_burden_history
+    ]
+    result["transitionHistory"] = [score for _, score in transition_history]
+    result["transitionHistoryLabels"] = [
+        f"{period[:4]} {int(period[4:])}월" for period, _ in transition_history
+    ]
+    return result
+
+
+def _fixture_dual_history(snapshot: dict, weights: dict[str, float]) -> list[tuple[str, int]]:
+    legacy_periods = [_month_key(label) for label in snapshot.get("historyLabels", [])]
+    by_id = {item["id"]: item for item in snapshot["indicators"]}
+    length = min(len(by_id[key].get("history", [])) for key in weights)
+    if not legacy_periods or not length:
+        return []
+    periods = legacy_periods[-length:]
+    series = {key: by_id[key]["history"][-length:] for key in weights}
+    return [
+        (period, round(sum(series[key][index] * weight for key, weight in weights.items())))
+        for index, period in enumerate(periods)
+    ]
 
 
 def calculate_score(indicators: list[dict]) -> int:
@@ -570,7 +635,7 @@ def with_live_liquidity(base: dict, liquidity: LiquiditySnapshot) -> dict:
     indicator["insight"] = (
         f"현재 단계는 ‘{stage}’이에요. 최근 3개월 저유동성 거래 비중은 "
         f"{liquidity.recent_share_percent:.1f}%이고, 확산 파생점수는 {phase_score}점이에요. "
-        f"종합점수에는 최대 2.5점 중 {bonus:.1f}점만 보조 반영해요."
+        "검증 중인 실험 지표라 두 핵심 점수에는 반영하지 않아요."
     )
     live_count = int(snapshot.get("liveIndicatorCount", 0)) + 1
     snapshot["score"] = calculate_score(snapshot["indicators"])

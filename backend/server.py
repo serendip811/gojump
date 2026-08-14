@@ -8,6 +8,7 @@ from urllib.parse import urlparse
 
 from backend.collector import MolitTradeClient, SEOUL_DISTRICTS, previous_month
 from backend.config import load_env
+from backend.dual_history import build_price_burden_history, build_transition_history
 from backend.ecos import EcosClient
 from backend.houstat import HoustatClient
 from backend.liquidity import analyze_liquidity
@@ -15,7 +16,7 @@ from backend.macro_store import MacroStore
 from backend.seoul_supply import SeoulSupplyClient
 from backend.kb_supply import KBSupplyClient
 from backend.snapshot import (
-    load_fixture, merge_composite_history, with_price_history, with_live_affordability, with_live_kb_supply, with_live_liquidity, with_live_rate, with_live_supply,
+    load_fixture, merge_composite_history, with_dual_scores, with_price_history, with_live_affordability, with_live_kb_supply, with_live_liquidity, with_live_rate, with_live_supply,
     with_live_subscription, with_live_unsold, with_live_volume,
 )
 from backend.subscription import SubscriptionClient, build_subscription_snapshot
@@ -155,6 +156,40 @@ def build_snapshot(year_month: str | None = None) -> dict:
         price_history = macro_store.seoul_apartment_prices(240)
         if price_history:
             snapshot = with_price_history(snapshot, price_history)
+
+        trade_store = TradeStore()
+        try:
+            volume_history = trade_store.monthly_counts(240)
+        finally:
+            trade_store.close()
+        history_months = [month for month, _ in volume_history]
+        burden_history = build_price_burden_history(
+            macro_store.khai_series(),
+            macro_store.rate_series("mortgage_rate_observations"),
+            macro_store.rate_series("base_rate_observations"),
+            history_months,
+        )
+        transition_history = build_transition_history(
+            volume_history,
+            macro_store.subscription_series(),
+            history_months,
+        )
+        if burden_history:
+            macro_store.upsert_price_burden_scores(burden_history)
+        if transition_history:
+            macro_store.upsert_transition_scores(transition_history)
+        current_scores = with_dual_scores(snapshot)
+        macro_store.upsert_price_burden_scores([
+            (year_month, current_scores["priceBurdenScore"]),
+        ])
+        macro_store.upsert_transition_scores([
+            (year_month, current_scores["transitionScore"]),
+        ])
+        snapshot = with_dual_scores(
+            current_scores,
+            macro_store.dual_scores("price_burden_score") or None,
+            macro_store.dual_scores("transition_score") or None,
+        )
     finally:
         macro_store.close()
     snapshot["freshIndicatorIds"] = sorted(fresh_indicator_ids)

@@ -6,7 +6,18 @@ struct MethodologyView: View {
     var body: some View {
         List {
             Section {
-                Text("각 지표를 0~100점으로 바꾸고 데이터 품질과 초기 가중치를 반영합니다. 점수가 높을수록 여러 고점 신호가 강하게 겹친 상태예요.")
+                Text("한 점수로 고점을 단정하지 않아요. 가격이 소득·금리에 비해 얼마나 부담스러운지와 거래·청약이 실제로 식는지를 분리해 봅니다.")
+                    .foregroundStyle(AppTheme.secondary)
+            }
+            Section("두 점수") {
+                methodologyRow("가격 부담도", detail: "구입부담 75% · 금리 25%", color: AppTheme.accent)
+                methodologyRow("고점 전환 신호", detail: "거래량 냉각 55% · 청약 냉각 45%", color: AppTheme.rateBenchmark)
+            }
+            Section("현재 판단") {
+                Text(snapshot.effectiveVerdict.title).font(.headline)
+                Text(snapshot.effectiveVerdict.summary).foregroundStyle(AppTheme.secondary)
+                Text("두 점수 중 65점 이상을 ‘높음’으로 보고 네 가지 시장 상태를 구분합니다.")
+                    .font(.caption)
                     .foregroundStyle(AppTheme.secondary)
             }
             Section {
@@ -14,14 +25,14 @@ struct MethodologyView: View {
                     HStack {
                         Label(indicator.title, systemImage: indicator.symbol)
                         Spacer()
-                        Text(weight(for: indicator.id))
+                        Text(role(for: indicator.id))
                             .foregroundStyle(AppTheme.secondary)
                     }
                 }
             } header: {
-                Text("현재 계산 비중")
+                Text("지표 역할")
             } footer: {
-                Text("비인기 거래 확산도 Beta는 고정 비중 없이 최대 2.5점의 보조 신호로만 반영합니다.")
+                Text("공급과 비인기 거래 확산도 Beta는 두 핵심 점수에 넣지 않고 해석을 돕는 보조 정보로 제공합니다.")
             }
             Section("점수 단계") {
                 ForEach(MarketLevel.allCases, id: \.self) { level in
@@ -36,7 +47,7 @@ struct MethodologyView: View {
             Section("원칙") {
                 Label("누락된 데이터는 0점으로 계산하지 않아요.", systemImage: "checkmark.shield")
                 Label("출처와 데이터 기준일을 항상 표시해요.", systemImage: "calendar.badge.checkmark")
-                Label("가격의 미래를 예측하지 않아요.", systemImage: "eye")
+                Label("가격보다 먼저 움직인다는 보장을 하지 않아요.", systemImage: "eye")
             }
         }
         .scrollContentBackground(.hidden)
@@ -44,12 +55,25 @@ struct MethodologyView: View {
         .navigationTitle("어떻게 계산하나요?")
     }
 
-    private func weight(for id: String) -> String {
-        guard let weight = ScoreCalculator.weights[id] else {
-            return id == "unpopular" ? "보조 신호" : "제외"
+    private func methodologyRow(_ title: String, detail: String, color: Color) -> some View {
+        HStack {
+            Circle().fill(color).frame(width: 10, height: 10)
+            Text(title)
+            Spacer()
+            Text(detail).font(.caption).foregroundStyle(AppTheme.secondary)
         }
-        let total = ScoreCalculator.weights.values.reduce(0, +)
-        return (weight / total * 100).formatted(.number.precision(.fractionLength(1))) + "%"
+    }
+
+    private func role(for id: String) -> String {
+        switch id {
+        case "pir": "부담도 75%"
+        case "rate": "부담도 25%"
+        case "volume": "전환 55%"
+        case "subscription": "전환 45%"
+        case "supply": "공급 여건"
+        case "unpopular": "실험 지표"
+        default: "보조 정보"
+        }
     }
 
     private func range(for level: MarketLevel) -> String {

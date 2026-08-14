@@ -13,6 +13,46 @@ final class ScoreCalculatorTests: XCTestCase {
         XCTAssertEqual(ScoreCalculator.score(for: MarketSnapshot.sample.indicators), MarketSnapshot.sample.score)
     }
 
+    func testDualScoresFallbackFromIndicators() {
+        XCTAssertEqual(MarketSnapshot.sample.effectivePriceBurdenScore, 87)
+        XCTAssertEqual(MarketSnapshot.sample.effectiveTransitionScore, 64)
+        XCTAssertEqual(MarketSnapshot.sample.effectiveVerdict, .expensiveButRising)
+    }
+
+    func testDualScoresRenormalizeWhenAnInputIsMissing() {
+        let pir = MarketSnapshot.sample.indicators.first { $0.id == "pir" }!
+        let volume = MarketSnapshot.sample.indicators.first { $0.id == "volume" }!
+        XCTAssertEqual(ScoreCalculator.priceBurdenScore(for: [pir]), pir.score)
+        XCTAssertEqual(ScoreCalculator.transitionScore(for: [volume]), volume.score)
+    }
+
+    func testFourQuadrantVerdicts() {
+        XCTAssertEqual(MarketVerdict.from(priceBurden: 64, transition: 64), .stable)
+        XCTAssertEqual(MarketVerdict.from(priceBurden: 65, transition: 64), .expensiveButRising)
+        XCTAssertEqual(MarketVerdict.from(priceBurden: 65, transition: 65), .peakWatch)
+        XCTAssertEqual(MarketVerdict.from(priceBurden: 64, transition: 65), .slowdown)
+    }
+
+    func testServerDualScoresAndHistoryRoundTrip() throws {
+        let encoded = try JSONEncoder().encode(MarketSnapshot.sample)
+        var object = try XCTUnwrap(JSONSerialization.jsonObject(with: encoded) as? [String: Any])
+        object["priceBurdenScore"] = 91
+        object["transitionScore"] = 72
+        object["verdict"] = "고점 경계"
+        object["priceBurdenHistory"] = [80, 85, 91]
+        object["priceBurdenHistoryLabels"] = ["2026 5월", "2026 6월", "2026 7월"]
+        object["transitionHistory"] = [60, 66, 72]
+        object["transitionHistoryLabels"] = ["2026 5월", "2026 6월", "2026 7월"]
+        let data = try JSONSerialization.data(withJSONObject: object)
+        let decoded = try JSONDecoder().decode(MarketSnapshot.self, from: data)
+
+        XCTAssertEqual(decoded.effectivePriceBurdenScore, 91)
+        XCTAssertEqual(decoded.effectiveTransitionScore, 72)
+        XCTAssertEqual(decoded.effectiveVerdict, .peakWatch)
+        XCTAssertEqual(decoded.effectivePriceBurdenHistory, [80, 85, 91])
+        XCTAssertEqual(decoded.effectiveTransitionHistory, [60, 66, 72])
+    }
+
     func testMissingIndicatorsRenormalizeWeights() {
         let pir = MarketSnapshot.sample.indicators.first { $0.id == "pir" }!
         XCTAssertEqual(ScoreCalculator.score(for: [pir]), pir.score)

@@ -19,12 +19,28 @@ REQUIRED_SECRETS = (
 
 
 def validate_snapshot(snapshot: dict, require_live: bool = False) -> None:
-    required = {"market", "score", "asOf", "history", "indicators", "dataMode"}
+    required = {
+        "market", "score", "asOf", "history", "indicators", "dataMode",
+        "priceBurdenScore", "transitionScore", "verdict",
+        "priceBurdenHistory", "priceBurdenHistoryLabels",
+        "transitionHistory", "transitionHistoryLabels",
+    }
     missing = required - snapshot.keys()
     if missing:
         raise ValueError(f"Snapshot missing fields: {', '.join(sorted(missing))}")
     if not 0 <= int(snapshot["score"]) <= 100:
         raise ValueError("Snapshot score must be between 0 and 100")
+    for field in ("priceBurdenScore", "transitionScore"):
+        if not 0 <= int(snapshot[field]) <= 100:
+            raise ValueError(f"Snapshot {field} must be between 0 and 100")
+    for values_field, labels_field in (
+        ("priceBurdenHistory", "priceBurdenHistoryLabels"),
+        ("transitionHistory", "transitionHistoryLabels"),
+    ):
+        values = snapshot[values_field]
+        labels = snapshot[labels_field]
+        if not values or len(values) != len(labels):
+            raise ValueError(f"{values_field} and {labels_field} must be non-empty and aligned")
     indicators = snapshot["indicators"]
     ids = {item.get("id") for item in indicators}
     expected = {"pir", "volume", "unpopular", "subscription", "rate", "supply"}
@@ -53,6 +69,10 @@ def validate_snapshot(snapshot: dict, require_live: bool = False) -> None:
             raise ValueError(
                 f"Production {indicator_id} history must contain at least {minimum} aligned observations"
             )
+    if require_live:
+        for values_field in ("priceBurdenHistory", "transitionHistory"):
+            if len(snapshot[values_field]) < 24:
+                raise ValueError(f"Production {values_field} must contain at least 24 months")
 
 
 def export_snapshot(output: Path, month: str | None, require_live: bool) -> dict:

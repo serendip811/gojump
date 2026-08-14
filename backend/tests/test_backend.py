@@ -11,6 +11,7 @@ from backend.ecos import (
     calculate_rate_score, calculate_unsold_score,
 )
 from backend.export_static_api import validate_snapshot
+from backend.dual_history import build_price_burden_history, build_transition_history
 from backend.backtest_rate import align_base_rate, build_rows as build_rate_rows
 from backend.backtest_supply import (
     build_rows as build_supply_rows,
@@ -42,7 +43,7 @@ from backend.macro_store import MacroStore
 from backend.seoul_supply import SeoulSupplyClient, SupplySnapshot, calculate_supply_score
 from backend.kb_supply import KBSupplyClient, KBSupplySnapshot, SupplyObservation
 from backend.snapshot import (
-    WEIGHTS, calculate_score, expansion_signal, load_fixture, volume_score, volume_score_from_history,
+    PRICE_BURDEN_WEIGHTS, TRANSITION_WEIGHTS, WEIGHTS, calculate_score, expansion_signal, load_fixture, verdict_for, volume_score, volume_score_from_history,
     merge_composite_history, with_composite_history, with_price_history, with_live_affordability, with_live_liquidity, with_live_rate, with_live_supply,
     with_live_kb_supply, with_live_subscription, with_live_unsold, with_live_volume,
 )
@@ -133,6 +134,24 @@ class SnapshotTests(unittest.TestCase):
     def test_fixture_score_is_consistent(self):
         fixture = load_fixture()
         self.assertEqual(calculate_score(fixture["indicators"]), fixture["score"])
+        indicators = {row["id"]: row["score"] for row in fixture["indicators"]}
+        self.assertEqual(
+            fixture["priceBurdenScore"],
+            round(indicators["pir"] * .75 + indicators["rate"] * .25),
+        )
+        self.assertEqual(
+            fixture["transitionScore"],
+            round(indicators["volume"] * .55 + indicators["subscription"] * .45),
+        )
+        self.assertEqual(fixture["verdict"], verdict_for(80, 70))
+        self.assertEqual(
+            len(fixture["priceBurdenHistory"]),
+            len(fixture["priceBurdenHistoryLabels"]),
+        )
+        self.assertEqual(
+            len(fixture["transitionHistory"]),
+            len(fixture["transitionHistoryLabels"]),
+        )
 
     def test_static_export_validation_rejects_fixture_in_production(self):
         with self.assertRaises(ValueError):
@@ -149,7 +168,25 @@ class SnapshotTests(unittest.TestCase):
         supply = next(row for row in snapshot["indicators"] if row["id"] == "supply")
         supply["rawHistory"] = list(range(10))
         supply["historyLabels"] = [str(year) for year in range(2017, 2027)]
+        snapshot["priceBurdenHistory"] = list(range(24))
+        snapshot["priceBurdenHistoryLabels"] = [f"2024 {month + 1}월" for month in range(24)]
+        snapshot["transitionHistory"] = list(range(24))
+        snapshot["transitionHistoryLabels"] = [f"2024 {month + 1}월" for month in range(24)]
         validate_snapshot(snapshot, require_live=True)
+
+    def test_dual_histories_use_independent_month_labels(self):
+        snapshot = load_fixture()
+        snapshot["priceBurdenHistory"] = [70, 71]
+        snapshot["priceBurdenHistoryLabels"] = ["2025 4월", "2025 5월"]
+        snapshot["transitionHistory"] = [40]
+        snapshot["transitionHistoryLabels"] = ["2026 1월"]
+        validate_snapshot(snapshot)
+
+    def test_static_export_rejects_misaligned_dual_history(self):
+        snapshot = load_fixture()
+        snapshot["transitionHistoryLabels"] = []
+        with self.assertRaisesRegex(ValueError, "transitionHistory"):
+            validate_snapshot(snapshot)
 
     def test_static_export_rejects_cached_or_fallback_indicator(self):
         snapshot = load_fixture()
@@ -424,6 +461,58 @@ class HoustatTests(unittest.TestCase):
             store.upsert_composite_scores([("202602", 64), ("202603", 63)])
             self.assertEqual(store.composite_scores(2), [("202602", 64), ("202603", 63)])
             store.close()
+
+    def test_macro_store_keeps_dual_histories_independently(self):
+        with tempfile.TemporaryDirectory() as directory:
+            store = MacroStore(Path(directory) / "test.sqlite3")
+            store.upsert_price_burden_scores([("202601", 80), ("202602", 82)])
+            store.upsert_transition_scores([("202602", 54), ("202603", 60)])
+            self.assertEqual(
+                store.dual_scores("price_burden_score"),
+                [("202601", 80), ("202602", 82)],
+            )
+            self.assertEqual(
+                store.dual_scores("transition_score"),
+                [("202602", 54), ("202603", 60)],
+            )
+            store.close()
+
+    def test_price_burden_backfill_does_not_rewrite_past_with_future_data(self):
+        months = [f"2024{month:02d}" for month in range(1, 13)]
+        khai = [
+            HoustatObservation("202301", 110),
+            HoustatObservation("202304", 120),
+            HoustatObservation("202401", 130),
+        ]
+        mortgage = [(month, 3 + index * .05) for index, month in enumerate(months)]
+        base = [(f"{month}15", 3.0) for month in months]
+        before = build_price_burden_history(khai, mortgage, base, months)
+        after = build_price_burden_history(
+            khai + [HoustatObservation("202404", 220)],
+            mortgage + [("202501", 8.0)],
+            base + [("20250115", 6.0)],
+            months + ["202501"],
+        )
+        self.assertEqual(before, [row for row in after if row[0] <= "202412"])
+
+    def test_transition_backfill_does_not_rewrite_past_with_future_data(self):
+        months = [
+            f"{absolute // 12:04d}{absolute % 12 + 1:02d}"
+            for absolute in range(2024 * 12, 2026 * 12)
+        ]
+        volume = [(month, 1000 - index * 10) for index, month in enumerate(months)]
+        subscription = [
+            SubscriptionObservation(month, 100, 10_000 - index * 100, 0, 0)
+            for index, month in enumerate(months)
+        ]
+        before = build_transition_history(volume, subscription, months)
+        future_month = "202601"
+        after = build_transition_history(
+            volume + [(future_month, 100)],
+            subscription + [SubscriptionObservation(future_month, 100, 100, 0, 0)],
+            months + [future_month],
+        )
+        self.assertEqual(before, [row for row in after if row[0] <= "202512"])
 
     def test_macro_store_upserts_seoul_apartment_prices(self):
         with tempfile.TemporaryDirectory() as directory:

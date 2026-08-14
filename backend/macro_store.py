@@ -74,6 +74,14 @@ class MacroStore:
             )
         """)
         self.connection.execute("""
+            CREATE TABLE IF NOT EXISTS dual_score_observations (
+                period TEXT PRIMARY KEY,
+                price_burden_score INTEGER,
+                transition_score INTEGER,
+                calculated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        self.connection.execute("""
             CREATE TABLE IF NOT EXISTS seoul_apartment_price_observations (
                 period TEXT PRIMARY KEY,
                 value REAL NOT NULL,
@@ -198,6 +206,40 @@ class MacroStore:
     def composite_scores(self, limit: int = 12) -> list[tuple[str, int]]:
         rows = self.connection.execute("""
             SELECT period, score FROM composite_score_observations
+            ORDER BY period DESC LIMIT ?
+        """, (limit,)).fetchall()
+        return [(str(period), int(score)) for period, score in reversed(rows)]
+
+    def upsert_price_burden_scores(self, observations: list[tuple[str, int]]) -> None:
+        self.connection.executemany("""
+            INSERT INTO dual_score_observations(period, price_burden_score)
+            VALUES (?, ?)
+            ON CONFLICT(period) DO UPDATE SET
+                price_burden_score=excluded.price_burden_score,
+                calculated_at=CURRENT_TIMESTAMP
+        """, observations)
+        self.connection.commit()
+
+    def upsert_transition_scores(self, observations: list[tuple[str, int]]) -> None:
+        self.connection.executemany("""
+            INSERT INTO dual_score_observations(period, transition_score)
+            VALUES (?, ?)
+            ON CONFLICT(period) DO UPDATE SET
+                transition_score=excluded.transition_score,
+                calculated_at=CURRENT_TIMESTAMP
+        """, observations)
+        self.connection.commit()
+
+    def dual_scores(
+        self,
+        column: str,
+        limit: int = 240,
+    ) -> list[tuple[str, int]]:
+        if column not in {"price_burden_score", "transition_score"}:
+            raise ValueError("Unknown dual score column")
+        rows = self.connection.execute(f"""
+            SELECT period, {column} FROM dual_score_observations
+            WHERE {column} IS NOT NULL
             ORDER BY period DESC LIMIT ?
         """, (limit,)).fetchall()
         return [(str(period), int(score)) for period, score in reversed(rows)]

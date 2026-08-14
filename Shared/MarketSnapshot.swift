@@ -5,11 +5,11 @@ enum MarketLevel: String, Codable, CaseIterable, Sendable {
 
     var title: String {
         switch self {
-        case .stable: "안정"
+        case .stable: "낮음"
         case .watch: "관찰"
         case .caution: "주의"
-        case .alert: "경계"
-        case .highRisk: "고점 위험"
+        case .alert: "높음"
+        case .highRisk: "매우 높음"
         }
     }
 
@@ -32,6 +32,40 @@ enum IndicatorTrend: String, Codable, Sendable {
         case .up: "arrow.up.right"
         case .down: "arrow.down.right"
         case .flat: "arrow.right"
+        }
+    }
+}
+
+enum MarketVerdict: String, Codable, CaseIterable, Sendable {
+    case stable = "안정 구간"
+    case expensiveButRising = "가격 부담 높음"
+    case peakWatch = "고점 경계"
+    case slowdown = "수요 위축 관찰"
+
+    static func from(priceBurden: Int, transition: Int) -> Self {
+        switch (priceBurden >= 65, transition >= 65) {
+        case (false, false): .stable
+        case (true, false): .expensiveButRising
+        case (true, true): .peakWatch
+        case (false, true): .slowdown
+        }
+    }
+
+    var title: String {
+        switch self {
+        case .stable: "안정 구간"
+        case .expensiveButRising: "가격 부담 높음"
+        case .peakWatch: "고점 경계 구간"
+        case .slowdown: "시장 위축 가능성"
+        }
+    }
+
+    var summary: String {
+        switch self {
+        case .stable: "가격 부담과 전환 신호가 모두 높지 않아요."
+        case .expensiveButRising: "가격 부담은 높지만 고점 전환은 아직 뚜렷하지 않아요."
+        case .peakWatch: "가격 부담이 높은 가운데 거래와 청약 수요도 식고 있어요."
+        case .slowdown: "가격 부담은 비교적 낮지만 수요와 거래가 위축되고 있어요."
         }
     }
 }
@@ -72,6 +106,9 @@ struct MarketIndicator: Identifiable, Codable, Hashable, Sendable {
 struct MarketSnapshot: Codable, Sendable {
     let market: String
     let score: Int
+    var priceBurdenScore: Int? = nil
+    var transitionScore: Int? = nil
+    var verdict: String? = nil
     let delta7d: Int
     let deltaLabel: String?
     let confidence: Double
@@ -83,6 +120,10 @@ struct MarketSnapshot: Codable, Sendable {
     var priceHistory: [Double]? = nil
     var priceHistoryLabels: [String]? = nil
     var priceHistoryUnit: String? = nil
+    var priceBurdenHistory: [Int]? = nil
+    var priceBurdenHistoryLabels: [String]? = nil
+    var transitionHistory: [Int]? = nil
+    var transitionHistoryLabels: [String]? = nil
     let dataMode: String?
     let liveIndicatorCount: Int?
     var freshIndicatorCount: Int? = nil
@@ -92,6 +133,20 @@ struct MarketSnapshot: Codable, Sendable {
 
     var level: MarketLevel { .from(score: score) }
     var strongestIndicator: MarketIndicator? { indicators.max { $0.score < $1.score } }
+    var effectivePriceBurdenScore: Int {
+        priceBurdenScore ?? ScoreCalculator.priceBurdenScore(for: indicators) ?? score
+    }
+    var effectiveTransitionScore: Int {
+        transitionScore ?? ScoreCalculator.transitionScore(for: indicators) ?? score
+    }
+    var effectiveVerdict: MarketVerdict {
+        if let verdict, let decoded = MarketVerdict(rawValue: verdict) { return decoded }
+        return .from(priceBurden: effectivePriceBurdenScore, transition: effectiveTransitionScore)
+    }
+    var effectivePriceBurdenHistory: [Int] { priceBurdenHistory ?? history }
+    var effectivePriceBurdenHistoryLabels: [String]? { priceBurdenHistoryLabels ?? historyLabels }
+    var effectiveTransitionHistory: [Int] { transitionHistory ?? history }
+    var effectiveTransitionHistoryLabels: [String]? { transitionHistoryLabels ?? historyLabels }
 
     var usesPreviousIndicatorValues: Bool {
         guard dataMode == "live" || dataMode == "partialLive",
@@ -143,6 +198,12 @@ extension MarketSnapshot {
         let absoluteMonth = 2020 * 12 + 11 + index
         return "\(absoluteMonth / 12) \(absoluteMonth % 12 + 1)월"
     }
+    private static let sampleDualLabels = [
+        "2025 8월", "2025 9월", "2025 10월", "2025 11월", "2025 12월", "2026 1월",
+        "2026 2월", "2026 3월", "2026 4월", "2026 5월", "2026 6월", "2026 7월",
+    ]
+    private static let samplePriceBurdenHistory = [72, 72, 72, 72, 75, 75, 76, 79, 79, 78, 86, 87]
+    private static let sampleTransitionHistory = [37, 42, 24, 22, 15, 30, 33, 46, 27, 33, 51, 64]
     private static let samplePriceHistory: [Double] = [
         81.857, 83.169, 84.499, 85.625, 86.44, 87.311, 88.76, 89.898,
         91.33, 92.876, 93.848, 94.842, 95.279, 95.501, 95.589, 95.641,
@@ -285,12 +346,16 @@ extension MarketSnapshot {
         priceHistory: samplePriceHistory,
         priceHistoryLabels: sampleCompositeLabels,
         priceHistoryUnit: "2026.01=100",
+        priceBurdenHistory: samplePriceBurdenHistory,
+        priceBurdenHistoryLabels: sampleDualLabels,
+        transitionHistory: sampleTransitionHistory,
+        transitionHistoryLabels: sampleDualLabels,
         dataMode: "sample",
         liveIndicatorCount: 0,
         indicators: [
             .init(id: "pir", title: "서울 주택구입부담", shortTitle: "구입부담", score: 89, trend: .up, value: "179.3", change: "1년 +23.6p", symbol: "house.fill", explanation: "K-HAI는 중위소득 가구가 표준대출로 중위가격 주택을 살 때의 원리금 상환 부담을 보여줘요. 100을 넘으면 부담이 큰 구간이에요.", insight: "서울 주택구입부담지수는 179.3이며 1년 전보다 +23.6p 변했어요.", source: "한국주택금융공사 HOUSTAT · 분기", observedAt: "2026년 1분기", history: [74, 75, 79, 78, 77, 78, 83, 89], rawHistory: sampleKHAIValues, historyLabels: sampleKHAILabels, historyUnit: "K-HAI", historyReferenceValue: 100, historyReferenceLabel: "부담 기준 100"),
             .init(id: "volume", title: "아파트 거래량", shortTitle: "거래량", score: 55, trend: .up, value: "4,720건", change: "전월 -10.2%", symbol: "chart.bar.fill", explanation: "최근 3개월 거래량을 직전 3개월, 전년 같은 기간, 과거 5년 같은 계절과 비교해 시장 유동성이 식는 정도를 봐요.", insight: "최근 3개월 거래량은 직전 3개월보다 -5.2%, 전년 같은 기간보다 -17.7% 변했어요. 과거 같은 계절과 비교하면 +16.6%예요.", source: "국토교통부 실거래가 · 잠정치", observedAt: "2026년 7월", history: [50, 47, 55, 62, 58, 63, 55, 55], rawHistory: sampleVolumeValues, historyLabels: sampleVolumeLabels, historyUnit: "건"),
-            .init(id: "unpopular", title: "비인기 거래 확산도 Beta", shortTitle: "확산도 Beta", score: 57, trend: .flat, value: "57", change: "확산 중", symbol: "building.2.crop.circle", explanation: "거래가 드물던 단지·면적군까지 매수세가 넓어지는지 보는 실험 지표예요.", insight: "현재 단계는 ‘확산 중’이에요. 종합점수에는 최대 2.5점의 보조 신호로만 반영해요.", source: "국토교통부 실거래가 · 자체 분석 Beta", observedAt: "2026년 7월", history: sampleLiquidityValues.map(Int.init), rawHistory: sampleLiquidityValues, historyLabels: sampleLiquidityLabels, historyUnit: "확산지수"),
+            .init(id: "unpopular", title: "비인기 거래 확산도 Beta", shortTitle: "확산도 Beta", score: 57, trend: .flat, value: "57", change: "확산 중", symbol: "building.2.crop.circle", explanation: "거래가 드물던 단지·면적군까지 매수세가 넓어지는지 보는 실험 지표예요.", insight: "현재 단계는 ‘확산 중’이에요. 검증 중인 실험 지표라 두 핵심 점수에는 반영하지 않아요.", source: "국토교통부 실거래가 · 자체 분석 Beta", observedAt: "2026년 7월", history: sampleLiquidityValues.map(Int.init), rawHistory: sampleLiquidityValues, historyLabels: sampleLiquidityLabels, historyUnit: "확산지수"),
             .init(
                 id: "subscription", title: "서울 청약 수요", shortTitle: "청약 수요",
                 score: 76, trend: .up, value: "25.2 : 1", change: "전년 대비 -71.0%",

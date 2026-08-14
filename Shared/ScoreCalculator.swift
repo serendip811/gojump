@@ -1,6 +1,9 @@
 import Foundation
 
 enum ScoreCalculator {
+    static let priceBurdenWeights: [String: Double] = ["pir": 0.75, "rate": 0.25]
+    static let transitionWeights: [String: Double] = ["volume": 0.55, "subscription": 0.45]
+
     static let weights: [String: Double] = [
         "pir": 0.25,
         "volume": 0.20,
@@ -22,6 +25,24 @@ enum ScoreCalculator {
             expansionSignal(for: $0).bonus
         } ?? 0
         return min(100, Int((Double(baseScore) + bonus).rounded()))
+    }
+
+    static func weightedScore(for indicators: [MarketIndicator], weights: [String: Double]) -> Int? {
+        let valid = indicators.compactMap { indicator -> (score: Int, weight: Double)? in
+            guard let weight = weights[indicator.id] else { return nil }
+            return (indicator.score, weight)
+        }
+        let totalWeight = valid.reduce(0) { $0 + $1.weight }
+        guard totalWeight > 0 else { return nil }
+        return Int((valid.reduce(0) { $0 + Double($1.score) * $1.weight } / totalWeight).rounded())
+    }
+
+    static func priceBurdenScore(for indicators: [MarketIndicator]) -> Int? {
+        weightedScore(for: indicators, weights: priceBurdenWeights)
+    }
+
+    static func transitionScore(for indicators: [MarketIndicator]) -> Int? {
+        weightedScore(for: indicators, weights: transitionWeights)
     }
 
     static func expansionSignal(for indicator: MarketIndicator) -> (score: Int, bonus: Double, stage: String) {
